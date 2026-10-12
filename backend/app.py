@@ -1,30 +1,22 @@
-import os
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
+from flask import Flask, jsonify
+from flask_cors import CORS
 from sqlalchemy.sql import text
+from config import Config
+from extentions import db
 
-# 1. Load the variables from the .env file
-load_dotenv()
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    db.init_app(app)
+    CORS(app) #Fix 2: lets front-end call API
 
-app = Flask(__name__)
+    #Fix 3: Run a query, if fail means connection is wrong
+    @app.route('/')
+    def index():
+        count = db.session.execute(text('SELECT COUNT(*) FROM user_profile')).scalar()
+        return jsonify(status='ok', user_profiles=count)
 
-# 2. Safely extract variables using os.environ.get()
-db_user = os.environ.get('DB_USER')
-db_password = os.environ.get('DB_PASSWORD')
-db_host = os.environ.get('DB_HOST')
-db_port = os.environ.get('DB_PORT', '3306') # Defaults to 3306 if not found
-db_name = os.environ.get('DB_NAME')
-
-# 3. Construct the secure URI string dynamically
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-@app.route('/')
-def index():
-    return "Connected securely without exposing passwords!"
+    return app
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    create_app().run(debug=True)
