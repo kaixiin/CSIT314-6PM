@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from sqlalchemy.sql import text
 from config import Config
-from extentions import db
+from extensions import db
 
 def create_app():
     app = Flask(__name__)
