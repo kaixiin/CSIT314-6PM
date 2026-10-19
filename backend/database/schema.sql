@@ -8,7 +8,6 @@ CREATE TABLE user_profile (
   profile_id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(50) NOT NULL UNIQUE,
   account_type ENUM('UserAdmin','InteriorDesigner','Customer','PlatformManager') NOT NULL,
-  permissions TEXT NOT NULL,
   is_suspended BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY(profile_id)
 );

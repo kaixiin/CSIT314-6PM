@@ -33,7 +33,6 @@ def login():
             "username": account.username,
             "profile_id": account.profile_id,
             "account_type": profile.account_type,
-            "permissions": profile.permissions,
         },
     }), 200
 

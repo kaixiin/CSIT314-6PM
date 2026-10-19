@@ -14,5 +14,4 @@ class UserProfile(db.Model):
         db.Enum("UserAdmin", "InteriorDesigner", "Customer", "PlatformManager"),
         nullable=False,
     )
-    permissions = db.Column(db.Text, nullable=False)
     is_suspended = db.Column(db.Boolean, default=False)
