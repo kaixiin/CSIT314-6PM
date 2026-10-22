@@ -1,10 +1,10 @@
 USE interior_design_platform;
 
-INSERT INTO user_profile (name, account_type, permissions) VALUES 
-('User Admin','UserAdmin','Create_UserAccount'), 
-('Interior Designer','InteriorDesigner','Create_IDP'),
-('Customer', 'Customer', 'View_Page'),
-('Platform Manager', 'PlatformManager', 'Create_IDPCategory');
+INSERT INTO user_profile (name, account_type) VALUES 
+('User Admin','UserAdmin'), 
+('Interior Designer','InteriorDesigner'),
+('Customer', 'Customer'),
+('Platform Manager', 'PlatformManager');
 
 INSERT INTO user_account (profile_id, username, password, email) VALUES
 (1, 'admin01', 'admin123', 'admin01@test.com'),
