@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Name of Website</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,sans-serif;background:#fafafa;color:#222}
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:14px 32px;min-height:72px;background:#fff;border-bottom:1px solid #ddd}
+  body.admin header{background:#222;color:#fff;border-color:#222}
+  body.admin .logo{border-color:#fff}
+  .brand{display:flex;align-items:center;gap:14px;font-weight:600;font-size:18px}
+  .logo{width:24px;height:24px;border:2px solid #222;border-radius:5px}
+  .right{display:flex;align-items:center;gap:10px;font-size:14px;color:#777}
+  body.admin .right{color:#ccc}
+  main{max-width:560px;margin:0 auto;padding:48px 24px}
+  body.admin main{max-width:760px}
+  .view{display:none}.view.on{display:block}
+  h1{font-size:32px;margin:0 0 12px}
+  .msg{color:#777;margin:0 0 28px;font-size:17px}
+  .msg.err{color:#b3261e}
+  #ok{background:#e9f9ee;color:#2f7d4a;border-radius:6px;padding:10px 14px;font-weight:600;margin-bottom:20px;display:none}
+  #ok.on{display:block}
+  label{display:block;font-size:15px;margin-bottom:8px}
+  input[type=text],input[type=email],input[type=password],select,textarea{width:100%;padding:0 16px;font:inherit;font-size:17px;border:1px solid #ccc;border-radius:6px;background:#fff;margin-bottom:22px}
+  input[type=text],input[type=email],input[type=password],select{height:56px}
+  textarea{padding:14px 16px;min-height:90px;resize:vertical}
+  ::placeholder{color:#999}
+  input:focus,select:focus,textarea:focus,button:focus-visible,.seg input:focus-visible+span{outline:2px solid #222;outline-offset:2px}
+  .seg{display:flex;border:1.5px solid #222;border-radius:6px;overflow:hidden;margin-bottom:22px;padding:0}
+  .seg label{flex:1;margin:0;text-align:center;cursor:pointer}
+  .seg input{position:absolute;opacity:0}
+  .seg span{display:block;padding:14px 8px;font-weight:600;background:#f0f0f0}
+  .seg input:checked+span{background:#222;color:#fff}
+  .perms{display:flex;gap:22px;margin-bottom:26px}
+  .perms label{display:flex;align-items:center;gap:8px;margin:0}
+  .btn,.sm{font:inherit;font-weight:600;background:#f0f0f0;border:1.5px solid #222;border-radius:6px;cursor:pointer;color:#222}
+  .btn{width:100%;height:56px;font-size:17px}
+  .sm{height:36px;padding:0 14px;font-size:14px}
+  .btn:hover,.sm:hover{background:#e4e4e4}
+  .sm.act{background:#fff;border-color:#fff;box-shadow:0 0 0 2px #888 inset}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+  .head h1{margin:0}
+  .cards{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+  .card{flex:1;min-width:150px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:20px;font-size:14px;color:#777}
+  .card b{display:block;font-size:30px;color:#222}
+  .row{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #eee}
+  .row:last-child{border:0}
+  .ico{width:32px;height:32px;border:1.5px solid #bbb;border-radius:6px;flex-shrink:0}
+  .nm{font-weight:600}.sub{font-size:13px;color:#888;margin-top:2px}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo"></span>Name of Website</div>
+  <div class="right">
+    <span id="status">Logged out</span>
+    <span id="nav" hidden>
+      <button class="sm" data-go="dash">Dashboard</button>
+      <button class="sm" data-go="profiles">Profiles</button>
+      <button class="sm" data-go="accounts">Accounts</button>
+    </span>
+    <button class="sm" id="logout" hidden>Log out</button>
+  </div>
+</header>
+<main>
+  <div id="ok"></div>
+
+  <!-- Login with role selection -->
+  <section class="view on" id="login">
+    <h1>Sign in</h1>
+    <p class="msg" id="loginMsg">Choose your role, then enter your email and password.</p>
+    <form id="loginForm">
+      <fieldset class="seg" style="border:1.5px solid #222">
+        <label><input type="radio" name="role" value="user" checked><span>Normal user</span></label>
+        <label><input type="radio" name="role" value="admin"><span>System admin</span></label>
+      </fieldset>
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="you@example.com" required>
+      <label for="pw">Password</label>
+      <input id="pw" type="password" placeholder="Enter your password" required>
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+  </section>
+
+  <!-- Normal user face -->
+  <section class="view" id="home">
+    <h1 id="welcome"></h1>
+  </section>
+
+  <!-- Admin face -->
+  <section class="view" id="dash">
+    <h1>Admin Console</h1>
+    <p class="msg">Manage user profiles and accounts.</p>
+    <div class="cards" id="stats"></div>
+    <div class="cards">
+      <button class="btn" data-go="create">+ Create user profile</button>
+      <button class="btn" data-go="newAccount">+ Create user account</button>
+    </div>
+  </section>
+
+  <section class="view" id="profiles">
+    <div class="head"><h1>User Profiles</h1><button class="sm" data-go="create">+ Create New Profile</button></div>
+    <div id="profileList"></div>
+  </section>
+
+  <section class="view" id="create">
+    <h1>Create User Profile</h1>
+    <p class="msg" id="createMsg">Set up a new user group so members can be assigned the right access.</p>
+    <form id="createForm">
+      <label for="uname">Profile name</label>
+      <input id="uname" type="text" placeholder="e.g. Interior Design" required>
+      <label for="desc">Description</label>
+      <textarea id="desc" placeholder="What is this user group for?"></textarea>
+      <label>Permission</label>
+      <div class="perms">
+        <label><input type="checkbox" value="Edit"> Edit</label>
+        <label><input type="checkbox" value="View"> View</label>
+        <label><input type="checkbox" value="Update"> Update</label>
+      </div>
+      <button class="btn" type="submit">Create Now</button>
+    </form>
+  </section>
+
+  <section class="view" id="accounts">
+    <div class="head"><h1>User Accounts</h1><button class="sm" data-go="newAccount">+ Create New Account</button></div>
+    <div id="accountList"></div>
+  </section>
+
+  <section class="view" id="newAccount">
+    <h1>Create User Account</h1>
+    <p class="msg" id="accountMsg">Create a login for a new user and assign a profile.</p>
+    <form id="accountForm">
+      <label for="aname">Full name</label>
+      <input id="aname" type="text" placeholder="e.g. Jamie Tan" required>
+      <label for="aemail">Email</label>
+      <input id="aemail" type="email" placeholder="jamie@example.com" required>
+      <label for="apw">Temporary password</label>
+      <input id="apw" type="password" placeholder="Min. 8 characters" minlength="8" required>
+      <label for="aprofile">User profile</label>
+      <select id="aprofile" required></select>
+      <button class="btn" type="submit">Create Account</button>
+    </form>
+  </section>
+</main>
+<script>
+  // Demo only: in-memory data and plain-text passwords. Replace with a real backend.
+  const accounts = [
+    {name:"System Admin", email:"admin@example.com", pw:"admin123", role:"admin"},
+    {name:"Alex", email:"alex@gmail.com", pw:"password123", role:"user", profile:"Standard User"}
+  ];
+  const profiles = [{name:"Standard User", desc:"Default access", perms:["View"]}];
+  const PARENT = {create:"profiles", newAccount:"accounts"}; // nav highlight
+  let me = null;
+
+  const $ = id => document.getElementById(id);
+  const isAdmin = () => me && me.role === "admin";
+  const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const msg = (id, text, err) => { $(id).textContent = text; $(id).className = "msg" + (err ? " err" : ""); };
+  const flash = t => { $("ok").textContent = t; $("ok").className = "on"; setTimeout(() => $("ok").className = "", 2500); };
+  const row = (a, b, c) => `<div class="row"><div class="ico"></div><div><div class="nm">${esc(a)}</div><div class="sub">${esc(b)}</div><div class="sub">${esc(c)}</div></div></div>`;
+
+  function show(id) {
+    // Role guard: users only ever see "home", admins never see "home"/"login"
+    if (!me) id = "login";
+    else if (!isAdmin()) id = "home";
+    else if (id === "login" || id === "home") id = "dash";
+
+    document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
+    document.body.className = me ? me.role : "";
+    $("status").textContent = me ? "Logged in as " + (isAdmin() ? "System Admin" : "User") : "Logged out";
+    $("logout").hidden = !me;
+    $("nav").hidden = !isAdmin();
+    document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("act", b.dataset.go === (PARENT[id] || id)));
+
+    if (!me) return;
+    if (isAdmin()) {
+      $("stats").innerHTML = `<div class="card"><b>${profiles.length}</b>User profiles</div><div class="card"><b>${accounts.length}</b>Accounts</div>`;
+      $("profileList").innerHTML = profiles.map(p => row(p.name, p.desc, p.perms.join(", ") || "No permissions set")).join("");
+      $("accountList").innerHTML = accounts.map(a => row(a.name, a.email, a.role === "admin" ? "System Admin" : "Profile: " + a.profile)).join("");
+      $("aprofile").innerHTML = profiles.map(p => `<option>${esc(p.name)}</option>`).join("");
+    } else {
+      $("welcome").textContent = "Welcome, " + me.name;
+    }
+  }
+
+  document.addEventListener("click", e => {
+    const go = e.target.dataset && e.target.dataset.go;
+    if (!go) return;
+    if (go === "create") msg("createMsg", "Set up a new user group so members can be assigned the right access.");
+    if (go === "newAccount") msg("accountMsg", "Create a login for a new user and assign a profile.");
+    show(go);
+  });
+
+  // Login: the selected role must match the account's role
+  $("loginForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const f = e.target, email = f.email.value.trim().toLowerCase(), role = f.role.value;
+    const acct = accounts.find(a => a.email.toLowerCase() === email && a.pw === f.pw.value && a.role === role);
+    const keep = f.role.value;
+    f.reset(); f.role.value = keep;
+    if (acct) { me = acct; msg("loginMsg", "Choose your role, then enter your email and password."); show("dash"); }
+    else { msg("loginMsg", "Login unsuccessful, role, email or password is incorrect.", true); f.email.focus(); }
+  });
+  $("logout").addEventListener("click", () => { me = null; show("login"); });
+
+  // Create profile (admin only)
+  $("createForm").addEventListener("submit", e => {
+    e.preventDefault();
+    if (!isAdmin()) return show("home");
+    const name = $("uname").value.trim();
+    if (profiles.some(p => p.name.toLowerCase() === name.toLowerCase()))
+      return msg("createMsg", `Create failed: a profile named "${name}" already exists.`, true);
+    profiles.push({name, desc: $("desc").value.trim(), perms: [...e.target.querySelectorAll("input:checked")].map(c => c.value)});
+    e.target.reset(); show("profiles"); flash("Profile created successfully.");
+  });
+
+  // Create account (admin only)
+  $("accountForm").addEventListener("submit", e => {
+    e.preventDefault();
+    if (!isAdmin()) return show("home");
+    const email = $("aemail").value.trim();
+    if (!profiles.length) return msg("accountMsg", "Create a user profile first.", true);
+    if (accounts.some(a => a.email.toLowerCase() === email.toLowerCase()))
+      return msg("accountMsg", `Create failed: an account for "${email}" already exists.`, true);
+    accounts.push({name: $("aname").value.trim(), email, pw: $("apw").value, role: "user", profile: $("aprofile").value});
+    e.target.reset(); show("accounts"); flash("Account created successfully.");
+  });
+
+  show("login");
+</script>
+</body>
+</html>
