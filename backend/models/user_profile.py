@@ -22,7 +22,8 @@ class UserProfile(db.Model):
             UserProfile.query.filter_by(account_type=account_type).exists()).scalar()
 
     @classmethod
-    def create_user_profile(cls, profile_name, account_type): 
+    def create_user_profile(cls, profile_name): 
+        account_type = profile_name.replace(" ","")
 
         if cls.check_existing(account_type):
             return False
