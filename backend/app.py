@@ -4,6 +4,7 @@ from sqlalchemy.sql import text
 from config import Config
 from extensions import db
 from routes.auth_routes import auth_bp   
+from dashboard import Dashboard
 
 def create_app():
     app = Flask(__name__)
@@ -11,6 +12,19 @@ def create_app():
     db.init_app(app)
     CORS(app) #Fix 2: lets front-end call API
     app.register_blueprint(auth_bp)
+
+    app.add_url_rule(
+        '/api/dashboard', 
+        view_func=Dashboard.as_view('dashboard_home'), 
+        methods=['GET']
+    )
+
+    app.add_url_rule(
+        '/api/dashboard/<string:action_name>', 
+        view_func=Dashboard.as_view('dashboard_actions'), 
+        methods=['POST']
+    )
+
     #Fix 3: Run a query, if fail means connection is wrong
     @app.route('/')
     def index():
