@@ -11,13 +11,6 @@ class UserProfile(db.Model):
 
     profile_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-<<<<<<< HEAD
-    account_type = db.Column(
-        db.Enum("UserAdmin", "InteriorDesigner", "Customer", "PlatformManager"),
-        nullable=False,
-    )
-    is_suspended = db.Column(db.Boolean, default=False)
-=======
     account_type = db.Column(db.String(50), unique=True, nullable=False)
     is_suspended = db.Column(db.Boolean, default=False)
 
@@ -53,4 +46,3 @@ class UserProfile(db.Model):
                 return False
 
 
->>>>>>> origin/create_UserP

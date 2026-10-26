@@ -14,33 +14,6 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 def login():
     return UserLoginPg().login(request.get_json(silent=True))
 
-<<<<<<< HEAD
-    data = request.get_json(silent=True)
-
-    if not isinstance(data, dict):
-        data = {}
-
-    account = UserLoginC().verify_login(data.get("username"), data.get("password"))
-
-    if account is None:
-        return jsonify({"success": False, "message": "Login failed"}), 401
-
-    session.clear()
-    session["account_id"] = account.account_id
-    session["profile_id"] = account.profile_id
-
-    profile = account.profile
-    return jsonify({
-        "success": True,
-        "account": {
-            "account_id": account.account_id,
-            "username": account.username,
-            "profile_id": account.profile_id,
-            "account_type": profile.account_type,
-        },
-    }), 200
-=======
->>>>>>> origin/login-logout
 
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
