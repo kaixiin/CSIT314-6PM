@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, session
 from flask.views import MethodView
 
 #import controllers
@@ -8,7 +8,7 @@ class Dashboard(MethodView):
     # ─── GET DASHBOARD DISPLAY (GET) ───
     def get(self):
         """ Runs automatically when someone loads the dashboard page """
-        account_type = request.cookies.get("account_type")
+        account_type = session.get("account_type")
         
         #if account_type == "UserAdmin":
         #    # Admin sees server metrics, user counts, and flag lists
@@ -28,8 +28,8 @@ class Dashboard(MethodView):
     }
 
     def post(self, action_name):
-        # 1. Get the account type from the secure login cookie
-        account_type = request.cookies.get("account_type")
+        # 1. Get the account type saved in the session at login
+        account_type = session.get("account_type")
         
         # 2. Get the allowed actions dictionary for this specific role
         allowed_actions = self.CONTROLLER_MATRIX.get(account_type)

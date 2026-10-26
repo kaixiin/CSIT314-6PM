@@ -27,6 +27,7 @@ class UserLoginPg:
         session.clear()
         session["account_id"] = account.account_id
         session["profile_id"] = account.profile_id
+        session["account_type"] = account.profile.account_type
         return self.display_success(account)
 
     def display_success(self, account):
