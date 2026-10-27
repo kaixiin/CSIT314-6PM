@@ -1,82 +1,60 @@
-// Function that connects the login page text boxes to the backend API
 async function triggerLogin(event) {
-    // Prevent the web page from automatically reloading when submitting the form
     event.preventDefault();
 
-    // 1. Grab the values written inside the HTML text input boxes
-    const usernameInput = document.getElementById('usernameField').value;
-    const passwordInput = document.getElementById('passwordField').value;
+    // 1. Target the literal input element IDs inside your HTML layout
+    const emailInput = document.getElementById('email').value.trim().toLowerCase();
+    const passwordInput = document.getElementById('pw').value;
+
+    msg("loginMsg", "Signing in...", false);
 
     try {
-        // 2. Send the request to your backend login route
+        // 2. Fetch connection pointing directly to your backend Blueprint routing prefix
         const response = await fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            // Packages the text up to match data.get("username") in your backend
             body: JSON.stringify({
-                username: usernameInput,
-                password: passwordInput
+                username: emailInput, // Matches data.get("username") in Flask
+                password: passwordInput // Matches data.get("password") in Flask
             }),
-            credentials: 'include' // Saves the Flask session cookie in the browser
+            credentials: 'include' // Transmits and handles Flask session cookies automatically
         });
 
         const data = await response.json();
 
-        // 3. Check the backend response keys (Line 27 in your auth_routes.py)
+        // 3. Process return payload using keys matching your auth_routes.py exactly
         if (data.success) {
             console.log("Login successful!");
-            // Send the user to the application dashboard page
-            window.location.href = 'dashboard.html'; 
+
+            // Reconstruct your internal session context tracking mapping
+            me = {
+                name: data.account.username,
+                email: data.account.username,
+                role: data.account.account_type === "admin" ? "admin" : "user",
+                permissions: data.account.permissions
+            };
+
+            // Reset form layout state safely
+            document.getElementById("loginForm").reset();
+
+            // Clear loading display and flip active application layout view panels contextually
+            msg("loginMsg", "Choose your role, then enter your email and password.", false);
+            
+            if (typeof updateUI === "function") updateUI();
+            show(isAdmin() ? "dash" : "home");
+
         } else {
-            // Displays "Login failed" from your backend (Line 24)
-            alert("Error: " + data.message); 
+            // Render specific backend-driven error text message strings cleanly
+            msg("loginMsg", data.message || "Login failed", true);
+            document.getElementById('email').focus();
         }
 
     } catch (error) {
         console.error("Connection error during login:", error);
-        alert("Cannot connect to login server.");
+        msg("loginMsg", "Cannot connect to login server.", true);
     }
 }
-// Function that connects the login page text boxes to the backend API
-async function triggerLogin(event) {
-    // Prevent the web page from automatically reloading when submitting the form
-    event.preventDefault();
 
-    // 1. Grab the values written inside the HTML text input boxes
-    const usernameInput = document.getElementById('usernameField').value;
-    const passwordInput = document.getElementById('passwordField').value;
-
-    try {
-        // 2. Send the request to your backend login route
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            // Packages the text up to match data.get("username") in your backend
-            body: JSON.stringify({
-                username: usernameInput,
-                password: passwordInput
-            }),
-            credentials: 'include' // Saves the Flask session cookie in the browser
-        });
-
-        const data = await response.json();
-
-        // 3. Check the backend response keys (Line 27 in your auth_routes.py)
-        if (data.success) {
-            console.log("Login successful!");
-            // Send the user to the application dashboard page
-            window.location.href = 'dashboard.html'; 
-        } else {
-            // Displays "Login failed" from your backend (Line 24)
-            alert("Error: " + data.message); 
-        }
-
-    } catch (error) {
-        console.error("Connection error during login:", error);
-        alert("Cannot connect to login server.");
-    }
-}
+// Bind to your form submission lifecycle listener
+document.getElementById("loginForm").addEventListener("submit", triggerLogin);
