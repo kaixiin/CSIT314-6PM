@@ -1,0 +1,60 @@
+async function triggerLogin(event) {
+    event.preventDefault();
+
+    // 1. Target the literal input element IDs inside your HTML layout
+    const emailInput = document.getElementById('email').value.trim().toLowerCase();
+    const passwordInput = document.getElementById('pw').value;
+
+    msg("loginMsg", "Signing in...", false);
+
+    try {
+        // 2. Fetch connection pointing directly to your backend Blueprint routing prefix
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: emailInput, // Matches data.get("username") in Flask
+                password: passwordInput // Matches data.get("password") in Flask
+            }),
+            credentials: 'include' // Transmits and handles Flask session cookies automatically
+        });
+
+        const data = await response.json();
+
+        // 3. Process return payload using keys matching your auth_routes.py exactly
+        if (data.success) {
+            console.log("Login successful!");
+
+            // Reconstruct your internal session context tracking mapping
+            me = {
+                name: data.account.username,
+                email: data.account.username,
+                role: data.account.account_type === "admin" ? "admin" : "user",
+                permissions: data.account.permissions
+            };
+
+            // Reset form layout state safely
+            document.getElementById("loginForm").reset();
+
+            // Clear loading display and flip active application layout view panels contextually
+            msg("loginMsg", "Choose your role, then enter your email and password.", false);
+            
+            if (typeof updateUI === "function") updateUI();
+            show(isAdmin() ? "dash" : "home");
+
+        } else {
+            // Render specific backend-driven error text message strings cleanly
+            msg("loginMsg", data.message || "Login failed", true);
+            document.getElementById('email').focus();
+        }
+
+    } catch (error) {
+        console.error("Connection error during login:", error);
+        msg("loginMsg", "Cannot connect to login server.", true);
+    }
+}
+
+// Bind to your form submission lifecycle listener
+document.getElementById("loginForm").addEventListener("submit", triggerLogin);
