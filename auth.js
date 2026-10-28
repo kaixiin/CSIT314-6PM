@@ -1,6 +1,7 @@
 async function triggerLogout() {
-    try {
-        const response = await fetch('/api/logout', {
+// COMMENT OUT THE REAL LOGOUT FETCH    
+try {
+    /*    const response = await fetch('/api/logout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -9,8 +10,8 @@ async function triggerLogout() {
         });
 
         const data = await response.json();
-
-        if (data.success) {
+*/
+        if (true) {
             console.log("Logged out successfully.");
             
             // Clean local active browser authentication objects

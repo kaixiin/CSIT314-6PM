@@ -8,6 +8,7 @@ async function triggerLogin(event) {
     msg("loginMsg", "Signing in...", false);
 
     try {
+        /*
         // 2. Fetch connection pointing directly to your backend Blueprint routing prefix
         const response = await fetch('/api/login', {
             method: 'POST',
@@ -22,9 +23,26 @@ async function triggerLogin(event) {
         });
 
         const data = await response.json();
+*/
 
+        // This looks up the user inside the accounts array in your HTML file
+        const foundUser = accounts.find(acc => acc.email === emailInput && acc.pw === passwordInput);
+        
+        // This creates a fake "data" object that mimics a successful server response
+        const data = {
+            success: foundUser ? true : false,
+            account: foundUser ? {
+                username: foundUser.name,
+                account_type: foundUser.role,
+                permissions: ["View"]
+            } : null,
+            message: "Invalid email or password."
+        };
+        // ---------------------------------------------------------
+        
         // 3. Process return payload using keys matching your auth_routes.py exactly
         if (data.success) {
+            alert("Login successful!");
             console.log("Login successful!");
 
             // Reconstruct your internal session context tracking mapping
@@ -41,8 +59,16 @@ async function triggerLogin(event) {
             // Clear loading display and flip active application layout view panels contextually
             msg("loginMsg", "Choose your role, then enter your email and password.", false);
             
-            if (typeof updateUI === "function") updateUI();
-            show(isAdmin() ? "dash" : "home");
+// Switch views natively based on the user's role assignment
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+            if (me.role === "admin") {
+                document.getElementById("dash").classList.add('on');
+            } else {
+                document.getElementById("home").classList.add('on');
+                if (document.getElementById("welcome")) {
+                    document.getElementById("welcome").innerText = `Welcome, ${me.name}!`;
+                }
+            }
 
         } else {
             // Render specific backend-driven error text message strings cleanly
