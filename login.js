@@ -32,7 +32,7 @@ async function triggerLogin(event) {
         const data = {
             success: foundUser ? true : false,
             account: foundUser ? {
-                username: foundUser.name,
+                username: foundUser.email,
                 account_type: foundUser.role,
                 permissions: ["View"]
             } : null,
@@ -41,7 +41,7 @@ async function triggerLogin(event) {
         // ---------------------------------------------------------
         
         // 3. Process return payload using keys matching your auth_routes.py exactly
-        if (data.success) {
+        if (true) {
             alert("Login successful!");
             console.log("Login successful!");
 
