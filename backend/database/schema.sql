@@ -22,3 +22,17 @@ CREATE TABLE user_account (
   PRIMARY KEY(account_id),
   FOREIGN KEY (profile_id) REFERENCES user_profile(profile_id)
 );
+
+CREATE TABLE company_profile (
+  company_id INT NOT NULL AUTO_INCREMENT,
+  account_id INT NOT NULL UNIQUE,
+  company_name VARCHAR(100) NOT NULL UNIQUE,
+  description TEXT,
+  address VARCHAR(255),
+  contact_number VARCHAR(20),
+  email VARCHAR(255),
+  logo VARCHAR(255),
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY(company_id),
+  FOREIGN KEY(account_id) REFERENCES user_account(account_id)
+);
