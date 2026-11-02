@@ -36,3 +36,4 @@ CREATE TABLE company_profile (
   PRIMARY KEY(company_id),
   FOREIGN KEY(account_id) REFERENCES user_account(account_id)
 );
+

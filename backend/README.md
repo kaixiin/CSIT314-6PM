@@ -22,7 +22,7 @@ backend/
   models/           Entity layer: classes that read/write the database tables
   controllers/      Controller layer: one file per controller, calls the models
   routes/           API endpoints the frontend calls, calls the controllers
-  database/         schema.sql and seed.sql
+  database/         schema.sql, seed.sql and test data scripts (see database/README.md)
 ```
 
 ### Adding a new feature
