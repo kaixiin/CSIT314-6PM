@@ -44,13 +44,13 @@ async function triggerLogin(event) {
         // state.js should be simplified to just read me.role straight --
         // flag this with the backend dev so the two sides agree on one shape.
         me = {
-            id: data.account.id,
+            id: data.account.account_id,
             name: data.account.username,
             email: data.account.username,
             role: data.account.account_type,
-            profile: data.account.profile,
+            profile: data.account.profile_id,
             status: data.account.status || "Active",
-            permissions: data.account.permissions
+            permissions: data.account.permissions || []
         };
 
         document.getElementById("loginForm").reset();

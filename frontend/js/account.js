@@ -29,7 +29,7 @@ async function triggerCreateAccount(event) {
                 name: fullNameInput,
                 email: emailInput,
                 password: passwordInput,
-                profile: selectedProfile
+                profile_id: selectedProfile
             }),
             credentials: 'include'
         });
