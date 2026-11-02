@@ -21,9 +21,9 @@
   <!-- Login -->
   <section class="view on" id="login">
     <h1>Sign in</h1>
-    <p class="msg" id="loginMsg">Enter your username and password.</p>
+    <p class="msg" id="loginMsg">Enter your email and password.</p>
     <form id="loginForm">
-      <label for="email">Username</label>
+      <label for="email">Email</label>
       <input id="email" type="email" placeholder="you@example.com" required>
       <label for="pw">Password</label>
       <input id="pw" type="password" placeholder="Enter your password" required>
@@ -263,6 +263,20 @@
     </div>
   </section>
 
+  <!-- Shared confirmation modal (Suspend / Reactivate / Delete).
+       Filled in and shown by confirmDialog() in js/state.js -- do not
+       hardcode text here. -->
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal-card">
+      <h2 id="modalTitle"></h2>
+      <p class="msg" id="modalBody"></p>
+      <div class="row2">
+        <button class="btn ghost" id="modalCancelBtn" type="button">Cancel</button>
+        <button class="btn danger-fill" id="modalConfirmBtn" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <!-- Load order matters: state.js defines the shared data/helpers that every
@@ -272,8 +286,7 @@
 <script src="js/auth.js"></script>
 <script src="js/profile.js"></script>
 <script src="js/account.js"></script>
-<!-- Sprint 3 (ID / company profile) JS goes here, e.g.: -->
-<!-- <script src="js/company.js"></script> -->
+<script src="js/company.js"></script>
 
 <script>
   show("login");
