@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Name of Website</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo"></span>Name of Website</div>
+  <div class="right">
+    <span id="status">Logged out</span>
+    <span id="nav" hidden></span>
+    <button class="sm" id="logout" hidden>Log out</button>
+  </div>
+</header>
+<main>
+  <div id="ok"></div>
+
+  <!-- Login -->
+  <section class="view on" id="login">
+    <h1>Sign in</h1>
+    <p class="msg" id="loginMsg">Enter your email and password.</p>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="you@example.com" required>
+      <label for="pw">Password</label>
+      <input id="pw" type="password" placeholder="Enter your password" required>
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+  </section>
+
+  <!-- Fallback face for roles without a dedicated flow yet (Customer) -->
+  <section class="view" id="home">
+    <h1 id="welcome"></h1>
+    <p class="msg">This role's screens haven't been designed yet in this prototype.</p>
+  </section>
+
+  <!-- ===================== SYSTEM ADMIN ===================== -->
+
+  <section class="view" id="dash">
+    <h1>Admin Console</h1>
+    <p class="msg">Manage user profiles and accounts.</p>
+    <div class="cards" id="stats"></div>
+    <div class="cards">
+      <button class="btn" data-go="create">+ Create user profile</button>
+      <button class="btn" data-go="newAccount">+ Create user account</button>
+    </div>
+  </section>
+
+  <section class="view" id="profiles">
+    <div class="head"><h1>User Profiles</h1><button class="sm" data-go="create">+ Create New Profile</button></div>
+    <div class="search"><input type="search" id="profileSearch" placeholder="Search by profile name..."></div>
+    <div class="list" id="profileList"></div>
+  </section>
+
+  <section class="view" id="profileDetail">
+    <button class="backlink" data-go="profiles">&larr; Back to profiles</button>
+    <div class="detail-head">
+      <div class="detail-ico"></div>
+      <div>
+        <h1 style="margin-bottom:4px" id="pdName">Profile name</h1>
+        <span class="badge" id="pdBadge"></span>
+      </div>
+    </div>
+    <p class="msg" id="profileDetailMsg">Review and update this profile's details, or suspend it to block members from logging in.</p>
+    <form id="profileDetailForm">
+      <label for="pdUsername">Profile name</label>
+      <input id="pdUsername" type="text" required>
+      <label for="pdDesc">Description</label>
+      <textarea id="pdDesc" placeholder="What is this user group for?"></textarea>
+      <label>Permission</label>
+      <div class="perms">
+        <label><input type="checkbox" id="pdEdit" value="Edit"> Edit</label>
+        <label><input type="checkbox" id="pdView" value="View"> View</label>
+        <label><input type="checkbox" id="pdUpdate" value="Update"> Update</label>
+      </div>
+      <div class="row2">
+        <button class="btn" type="submit">Save Changes</button>
+        <button class="btn danger" type="button" id="pdSuspendBtn">Suspend</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="view" id="create">
+    <h1>Create User Profile</h1>
+    <p class="msg" id="createMsg">Set up a new user group so members can be assigned the right access.</p>
+    <form id="createForm">
+      <label for="uname">Profile name</label>
+      <input id="uname" type="text" placeholder="e.g. Interior Design" required>
+      <label for="desc">Description</label>
+      <textarea id="desc" placeholder="What is this user group for?"></textarea>
+      <label>Permission</label>
+      <div class="perms">
+        <label><input type="checkbox" value="Edit"> Edit</label>
+        <label><input type="checkbox" value="View"> View</label>
+        <label><input type="checkbox" value="Update"> Update</label>
+      </div>
+      <button class="btn" type="submit">Create Now</button>
+    </form>
+  </section>
+
+  <section class="view" id="accounts">
+    <div class="head"><h1>User Accounts</h1><button class="sm" data-go="newAccount">+ Create New Account</button></div>
+    <div class="search"><input type="search" id="accountSearch" placeholder="Search by name or email..."></div>
+    <div class="list" id="accountList"></div>
+  </section>
+
+  <section class="view" id="accountDetail">
+    <button class="backlink" data-go="accounts">&larr; Back to accounts</button>
+    <div class="detail-head">
+      <div class="detail-ico"></div>
+      <div>
+        <h1 style="margin-bottom:4px" id="adName">Account name</h1>
+        <span class="badge" id="adBadge"></span>
+      </div>
+    </div>
+    <p class="msg" id="accountDetailMsg">Review and update this account's details, or suspend it to block the user from logging in.</p>
+    <form id="accountDetailForm">
+      <label for="adFullname">Full name</label>
+      <input id="adFullname" type="text" required>
+      <label for="adEmail">Email</label>
+      <input id="adEmail" type="email" required>
+      <label for="adProfile">User profile</label>
+      <select id="adProfile" required></select>
+      <div class="row2">
+        <button class="btn" type="submit">Save Changes</button>
+        <button class="btn danger" type="button" id="adSuspendBtn">Suspend</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="view" id="newAccount">
+    <h1>Create User Account</h1>
+    <p class="msg" id="accountMsg">Create a login for a new user and assign a profile.</p>
+    <form id="accountForm">
+      <label for="aname">Full name</label>
+      <input id="aname" type="text" placeholder="e.g. Jamie Tan" required>
+      <label for="aemail">Email</label>
+      <input id="aemail" type="email" placeholder="jamie@example.com" required>
+      <label for="apw">Temporary password</label>
+      <input id="apw" type="password" placeholder="Min. 8 characters" minlength="8" required>
+      <label for="aprofile">User profile</label>
+      <select id="aprofile" required></select>
+      <button class="btn" type="submit">Create Account</button>
+    </form>
+  </section>
+
+  <!-- ===================== ID (Interior Designer) ===================== -->
+  <!-- Markup only below -- create/edit/delete/search are wired up by the
+       Sprint 3 JS (e.g. js/company.js), not included here. -->
+
+  <section class="view" id="ccNoProfile">
+    <h1>Company Profile</h1>
+    <p class="msg">Customers find you through your company profile and portfolio.</p>
+    <div class="center-card">
+      <div class="ico"></div>
+      <p style="font-weight:600;margin-bottom:6px">No company profile yet</p>
+      <p class="msg" style="margin-bottom:24px">Create one so customers can find information about your company.</p>
+      <button class="btn" style="width:auto;padding:0 28px" data-go="ccCreate">+ Create Company Profile</button>
+    </div>
+  </section>
+
+  <section class="view" id="ccCreate">
+    <h1>Create Company Profile</h1>
+    <p class="msg" id="ccCreateMsg">Tell customers who you are so they can find and contact you.</p>
+    <form id="companyCreateForm">
+      <div class="logo-upload">+ Add<br>logo</div>
+      <label for="cname">Company name</label>
+      <input id="cname" type="text" placeholder="e.g. Studio Lumen" required>
+      <label for="cdesc">About the company</label>
+      <textarea id="cdesc" placeholder="What does your company do, and what makes it stand out?" required></textarea>
+      <label>Services offered</label>
+      <div class="perms">
+        <label><input type="checkbox" value="Interior Design" checked> Interior Design</label>
+        <label><input type="checkbox" value="Renovation"> Renovation</label>
+        <label><input type="checkbox" value="Space Planning"> Space Planning</label>
+        <label><input type="checkbox" value="Furniture Sourcing"> Furniture Sourcing</label>
+      </div>
+      <label for="cemail">Contact email</label>
+      <input id="cemail" type="email" placeholder="studio@example.com" required>
+      <label for="cphone">Contact phone</label>
+      <input id="cphone" type="tel" placeholder="+65 9123 4567">
+      <label for="caddr">Address</label>
+      <input id="caddr" type="text" placeholder="e.g. 12 Design Ave, Singapore">
+      <button class="btn" type="submit">Create Profile</button>
+    </form>
+  </section>
+
+  <section class="view" id="ccView">
+    <div class="head"><h1>Company Profile</h1>
+      <span class="row2" style="gap:8px">
+        <button class="sm" data-go="ccEdit">Edit Profile</button>
+        <button class="sm" id="ccDeleteBtn" style="color:#b3261e;border-color:#b3261e">Delete Profile</button>
+      </span>
+    </div>
+    <p class="msg">This is what customers see when they find your company.</p>
+    <div class="vcard">
+      <div class="vlogo"></div>
+      <div class="vname" id="vName"></div>
+      <div class="vdesc" id="vDesc"></div>
+      <div class="tags" id="vTags"></div>
+    </div>
+    <div class="vcard">
+      <div class="vgrid">
+        <div><span>Contact email</span><span id="vEmail"></span></div>
+        <div><span>Contact phone</span><span id="vPhone"></span></div>
+        <div style="grid-column:1/-1"><span>Address</span><span id="vAddr"></span></div>
+      </div>
+    </div>
+    <div class="portfolio">
+      <h2>Portfolio</h2>
+      <div class="pgrid" id="vPortfolio"></div>
+    </div>
+  </section>
+
+  <section class="view" id="ccEdit">
+    <button class="backlink" data-go="ccView">&larr; Back to profile</button>
+    <h1>Update Company Profile</h1>
+    <p class="msg">Keep your company profile up to date so customers see accurate information.</p>
+    <form id="companyEditForm">
+      <div class="logo-upload">Change<br>logo</div>
+      <label for="ecname">Company name</label>
+      <input id="ecname" type="text" required>
+      <label for="ecdesc">About the company</label>
+      <textarea id="ecdesc" required></textarea>
+      <label>Services offered</label>
+      <div class="perms">
+        <label><input type="checkbox" id="svcDesign" value="Interior Design"> Interior Design</label>
+        <label><input type="checkbox" id="svcReno" value="Renovation"> Renovation</label>
+        <label><input type="checkbox" id="svcSpace" value="Space Planning"> Space Planning</label>
+        <label><input type="checkbox" id="svcFurn" value="Furniture Sourcing"> Furniture Sourcing</label>
+      </div>
+      <label for="ecemail">Contact email</label>
+      <input id="ecemail" type="email" required>
+      <label for="ecphone">Contact phone</label>
+      <input id="ecphone" type="tel">
+      <label for="ecaddr">Address</label>
+      <input id="ecaddr" type="text">
+      <div class="row2">
+        <button class="btn" type="submit">Save Changes</button>
+        <button class="btn ghost" type="button" data-go="ccView">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- #19 Search company profile -->
+  <section class="view" id="browseCompanies">
+    <h1>Browse Companies</h1>
+    <p class="msg">See how other competitors present their portfolios.</p>
+    <div class="search"><input type="search" id="companySearch" placeholder="Search by company name..."></div>
+    <div class="list" id="companyList"></div>
+  </section>
+
+  <section class="view" id="competitorView">
+    <button class="backlink" data-go="browseCompanies">&larr; Back to browse companies</button>
+    <div class="vcard">
+      <div class="vlogo"></div>
+      <div class="vname" id="xName"></div>
+      <div class="vdesc" id="xDesc"></div>
+      <div class="tags" id="xTags"></div>
+    </div>
+  </section>
+
+  <!-- Shared confirmation modal (Suspend / Reactivate / Delete).
+       Filled in and shown by confirmDialog() in js/state.js -- do not
+       hardcode text here. -->
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal-card">
+      <h2 id="modalTitle"></h2>
+      <p class="msg" id="modalBody"></p>
+      <div class="row2">
+        <button class="btn ghost" id="modalCancelBtn" type="button">Cancel</button>
+        <button class="btn danger-fill" id="modalConfirmBtn" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Load order matters: state.js defines the shared data/helpers that every
+     other script below depends on, so it must load first. -->
+<script src="js/state.js"></script>
+<script src="js/login.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/account.js"></script>
+<script src="js/company.js"></script>
+
+<script>
+  show("login");
+</script>
+</body>
+</html>
