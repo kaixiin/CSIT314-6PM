@@ -1,3 +1,4 @@
+#LOGOUT - #2, 14, 31, 40
 # Boundary: UserLogoutPg
 # Methods:
 #   logout(): ends the session, then shows success

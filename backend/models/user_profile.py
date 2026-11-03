@@ -15,6 +15,7 @@ class UserProfile(db.Model):
     description = db.Column(db.String(255), nullable=False)
     is_suspended = db.Column(db.Boolean, default=False)
 
+    # -- STATIC METHODS -- UTILITY FUNCTIONS --
     @staticmethod
     def check_existing(account_type):
         account_type = account_type
@@ -22,6 +23,8 @@ class UserProfile(db.Model):
         return db.session.query(
             UserProfile.query.filter_by(account_type=account_type).exists()).scalar()
 
+    # -- CLASS METHODS -- APP LOGIC --
+    #CREATE USER PROFILE - #3
     @classmethod
     def create_user_profile(cls, name, account_type, description): 
 
@@ -45,4 +48,15 @@ class UserProfile(db.Model):
                 print(f"An unexpected error occurred: {e}")
                 return False
 
+    #VIEW ALL USER PROFILE
+    @classmethod
+    def view_all_user_profiles(cls): 
+
+        try:
+            all_profiles = cls.query.order_by(cls.profile_id).all()
+            return all_profiles
+            
+        except Exception as e:
+            print(f"Error fetching user profiles: {e}")
+            return None 
 
