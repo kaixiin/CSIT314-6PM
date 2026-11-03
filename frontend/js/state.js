@@ -31,7 +31,7 @@ const $ = id => document.getElementById(id);
 // fallbacks below if needed.
 async function fetchProfiles() {
   try {
-    const res = await fetch('http://127.0.0.1:5000/api/profiles', { credentials: 'include' });
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/profiles`, { credentials: 'include' });
     const data = await res.json();
     profiles = data.profiles || data || [];
   } catch (error) {
@@ -40,7 +40,7 @@ async function fetchProfiles() {
 }
 async function fetchAccounts() {
   try {
-    const res = await fetch('http://127.0.0.1:5000/api/accounts', { credentials: 'include' });
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/accounts`, { credentials: 'include' });
     const data = await res.json();
     accounts = data.accounts || data || [];
   } catch (error) {
@@ -49,7 +49,7 @@ async function fetchAccounts() {
 }
 async function fetchCompanyProfile(accountId) {
   try {
-    const res = await fetch(`http://127.0.0.1:5000/api/companies/${accountId}`, { credentials: 'include' });
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/companies/${accountId}`, { credentials: 'include' });
     if (res.status === 404) { delete companyProfiles[accountId]; return; }
     const data = await res.json();
     companyProfiles[accountId] = data.company || data;
@@ -60,7 +60,7 @@ async function fetchCompanyProfile(accountId) {
 async function fetchCompanies(query) {
   try {
     const qs = query ? `?q=${encodeURIComponent(query)}` : '';
-    const res = await fetch(`http://127.0.0.1:5000/api/companies${qs}`, { credentials: 'include' });
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/companies${qs}`, { credentials: 'include' });
     const data = await res.json();
     otherCompanies = data.companies || data || [];
   } catch (error) {

@@ -62,7 +62,7 @@ async function triggerUpdateProfile(event) {
 
     try {
         // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles${p.id}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles/${p.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
