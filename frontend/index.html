@@ -18,7 +18,7 @@
 <main>
   <div id="ok"></div>
 
-  <!-- Login -->
+  <!-- ===================== LOGIN  (js/auth/) ===================== -->
   <section class="view on" id="login">
     <h1>Sign in</h1>
     <p class="msg" id="loginMsg">Enter your email and password.</p>
@@ -31,13 +31,14 @@
     </form>
   </section>
 
-  <!-- Fallback face for roles without a dedicated flow yet (Customer) -->
+  <!-- ===================== CUSTOMER / PLATFORM MANAGER  (js/customer/, js/pm/) ===================== -->
+  <!-- Fallback face for roles without a dedicated flow yet -->
   <section class="view" id="home">
     <h1 id="welcome"></h1>
     <p class="msg">This role's screens haven't been designed yet in this prototype.</p>
   </section>
 
-  <!-- ===================== SYSTEM ADMIN ===================== -->
+  <!-- ===================== USER ADMIN: Dashboard + Profiles  (js/admin/profile.js) ===================== -->
 
   <section class="view" id="dash">
     <h1>Admin Console</h1>
@@ -101,6 +102,8 @@
     </form>
   </section>
 
+  <!-- ===================== USER ADMIN: Accounts  (js/admin/account.js) ===================== -->
+
   <section class="view" id="accounts">
     <div class="head"><h1>User Accounts</h1><button class="sm" data-go="newAccount">+ Create New Account</button></div>
     <div class="search"><input type="search" id="accountSearch" placeholder="Search by name or email..."></div>
@@ -147,9 +150,7 @@
     </form>
   </section>
 
-  <!-- ===================== ID (Interior Designer) ===================== -->
-  <!-- Markup only below -- create/edit/delete/search are wired up by the
-       Sprint 3 JS (e.g. js/company.js), not included here. -->
+  <!-- ===================== INTERIOR DESIGNER: Company  (js/id/company.js) ===================== -->
 
   <section class="view" id="ccNoProfile">
     <h1>Company Profile</h1>
@@ -247,8 +248,9 @@
     </div>
   </section>
 
-  <!-- Shared confirmation modal (Suspend / Reactivate / Delete).
-       Filled in and shown by confirmDialog() in js/state.js -- do not
+  <!-- ===================== SHARED ===================== -->
+  <!-- Confirmation modal (Suspend / Reactivate / Delete).
+       Filled in and shown by confirmDialog() in js/core/ui.js -- do not
        hardcode text here. -->
   <div class="modal-overlay" id="modalOverlay" hidden>
     <div class="modal-card">
@@ -263,15 +265,20 @@
 
 </main>
 
-<!-- Load order matters: state.js defines the shared data/helpers that every
-     other script below depends on, so it must load first. -->
-<script src="js/config.js"></script>
-<script src="js/state.js"></script>
-<script src="js/login.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/profile.js"></script>
-<script src="js/account.js"></script>
-<script src="js/company.js"></script>
+<!-- Load order matters: core/ first (settings, shared data, backend loaders,
+     rendering + view router), then one folder per role. -->
+<script src="js/core/config.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/ui.js"></script>
+
+<script src="js/auth/login.js"></script>
+<script src="js/auth/logout.js"></script>
+
+<script src="js/admin/profile.js"></script>
+<script src="js/admin/account.js"></script>
+
+<script src="js/id/company.js"></script>
 
 <script>
   show("login");
