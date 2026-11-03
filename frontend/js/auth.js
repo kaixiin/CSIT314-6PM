@@ -3,7 +3,7 @@
 
 async function triggerLogout() {
     try {
-        const response = await fetch('/api/logout', {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/logout`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

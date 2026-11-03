@@ -8,6 +8,7 @@ CREATE TABLE user_profile (
   profile_id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(50) NOT NULL UNIQUE,
   account_type VARCHAR(50) NOT NULL UNIQUE,
+  description VARCHAR(255) NOT NULL,
   is_suspended BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY(profile_id)
 );

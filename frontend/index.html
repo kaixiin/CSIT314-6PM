@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Name of Website</title>
+<title>6PM Studio</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header>
-  <div class="brand"><span class="logo"></span>Name of Website</div>
+  <div class="brand"><span class="logo"></span>6PM Studio</div>
   <div class="right">
     <span id="status">Logged out</span>
     <span id="nav" hidden></span>
@@ -70,12 +70,12 @@
       <input id="pdUsername" type="text" required>
       <label for="pdDesc">Description</label>
       <textarea id="pdDesc" placeholder="What is this user group for?"></textarea>
-      <label>Permission</label>
+      <!--<label>Permission</label>
       <div class="perms">
         <label><input type="checkbox" id="pdEdit" value="Edit"> Edit</label>
         <label><input type="checkbox" id="pdView" value="View"> View</label>
         <label><input type="checkbox" id="pdUpdate" value="Update"> Update</label>
-      </div>
+      </div>-->
       <div class="row2">
         <button class="btn" type="submit">Save Changes</button>
         <button class="btn danger" type="button" id="pdSuspendBtn">Suspend</button>
@@ -91,12 +91,12 @@
       <input id="uname" type="text" placeholder="e.g. Interior Design" required>
       <label for="desc">Description</label>
       <textarea id="desc" placeholder="What is this user group for?"></textarea>
-      <label>Permission</label>
+      <!--<label>Permission</label>
       <div class="perms">
         <label><input type="checkbox" value="Edit"> Edit</label>
         <label><input type="checkbox" value="View"> View</label>
         <label><input type="checkbox" value="Update"> Update</label>
-      </div>
+      </div>-->
       <button class="btn" type="submit">Create Now</button>
     </form>
   </section>
@@ -281,6 +281,7 @@
 
 <!-- Load order matters: state.js defines the shared data/helpers that every
      other script below depends on, so it must load first. -->
+<script src="js/config.js"></script>
 <script src="js/state.js"></script>
 <script src="js/login.js"></script>
 <script src="js/auth.js"></script>
