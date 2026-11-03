@@ -3,29 +3,24 @@ from flask_cors import CORS
 from sqlalchemy.sql import text
 from config import Config
 from extensions import db
-from routes.auth_routes import auth_bp   
-from dashboard import Dashboard
+from routes.auth_routes import auth_bp  #registered for Login/Logout authentication 
+from routes.useradmin_routes import admin_bp  #registered for Admin functions
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     db.init_app(app)
-    CORS(app) #Fix 2: lets front-end call API
+    CORS(app, supports_credentials=True, resources={
+    r"/*": {
+        "origins": ["http://127.0.0.1:5500", "http://localhost:5500"]
+    }
+    })
+    
+    #register blueprints
     app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
 
-    app.add_url_rule(
-        '/api/dashboard', 
-        view_func=Dashboard.as_view('dashboard_home'), 
-        methods=['GET']
-    )
-
-    app.add_url_rule(
-        '/api/dashboard/<string:action_name>', 
-        view_func=Dashboard.as_view('dashboard_actions'), 
-        methods=['POST']
-    )
-
-    #Fix 3: Run a query, if fail means connection is wrong
+    #db health check route
     @app.route('/')
     def index():
         count = db.session.execute(text('SELECT COUNT(*) FROM user_profile')).scalar()

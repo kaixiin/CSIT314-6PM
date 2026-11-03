@@ -31,7 +31,7 @@ const $ = id => document.getElementById(id);
 // fallbacks below if needed.
 async function fetchProfiles() {
   try {
-    const res = await fetch('/api/profiles', { credentials: 'include' });
+    const res = await fetch('http://127.0.0.1:5000/api/profiles', { credentials: 'include' });
     const data = await res.json();
     profiles = data.profiles || data || [];
   } catch (error) {
@@ -40,7 +40,7 @@ async function fetchProfiles() {
 }
 async function fetchAccounts() {
   try {
-    const res = await fetch('/api/accounts', { credentials: 'include' });
+    const res = await fetch('http://127.0.0.1:5000/api/accounts', { credentials: 'include' });
     const data = await res.json();
     accounts = data.accounts || data || [];
   } catch (error) {
@@ -49,7 +49,7 @@ async function fetchAccounts() {
 }
 async function fetchCompanyProfile(accountId) {
   try {
-    const res = await fetch(`/api/companies/${accountId}`, { credentials: 'include' });
+    const res = await fetch(`http://127.0.0.1:5000/api/companies/${accountId}`, { credentials: 'include' });
     if (res.status === 404) { delete companyProfiles[accountId]; return; }
     const data = await res.json();
     companyProfiles[accountId] = data.company || data;
@@ -60,7 +60,7 @@ async function fetchCompanyProfile(accountId) {
 async function fetchCompanies(query) {
   try {
     const qs = query ? `?q=${encodeURIComponent(query)}` : '';
-    const res = await fetch(`/api/companies${qs}`, { credentials: 'include' });
+    const res = await fetch(`http://127.0.0.1:5000/api/companies${qs}`, { credentials: 'include' });
     const data = await res.json();
     otherCompanies = data.companies || data || [];
   } catch (error) {
@@ -71,13 +71,9 @@ async function fetchCompanies(query) {
 // Works out an account's actual role from its data. Login has no role
 // dropdown -- role is always derived from the matched account, never picked
 // by the user. This matches the UCD/SQ: login only takes email + password.
-const roleOfAccount = a => {
-  if (!a) return null;
-  if (a.role === "admin") return "admin";
-  if (a.profile === "Interior Design") return "id";
-  if (a.profile === "Customer") return "customer";
-  return "user";
-};
+const ROLE_BY_TYPE = { UserAdmin: "admin", InteriorDesigner: "id", Customer: "customer", PlatformManager: "pm" };
+const roleOfAccount = a => a ? (ROLE_BY_TYPE[a.role] || "user") : null;
+
 const roleOf = () => roleOfAccount(me);
 
 const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));

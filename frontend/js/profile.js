@@ -1,12 +1,6 @@
 // profile.js
 // Admin: create / view / update / search / suspend User Profiles.
 // Connected to the real backend.
-//
-// NOTE for the backend dev: /api/profiles (POST) matches the endpoint already
-// agreed for Create. The update and suspend endpoints below (PUT /api/profiles/:id
-// and PATCH /api/profiles/:id/status) are *assumed* to follow the same
-// pattern -- please confirm the real paths/response shape and adjust if
-// they're different.
 
 async function triggerCreateProfile(event) {
     event.preventDefault();
@@ -14,20 +8,19 @@ async function triggerCreateProfile(event) {
 
     const name = document.getElementById('uname').value.trim();
     const desc = document.getElementById('desc').value.trim();
-    const checkedPermissions = [...document.querySelectorAll('#createForm .perms input[type="checkbox"]:checked')].map(c => c.value);
+//    const checkedPermissions = [...document.querySelectorAll('#createForm .perms input[type="checkbox"]:checked')].map(c => c.value);
 
     msg("createMsg", "Creating profile...", false);
 
     try {
-        const response = await fetch('/api/profiles', {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 name: name,
-                description: desc,
-                permissions: checkedPermissions
+                description: desc
             }),
             credentials: 'include'
         });
@@ -69,12 +62,12 @@ async function triggerUpdateProfile(event) {
 
     try {
         // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`/api/profiles/${p.id}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles${p.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, description: desc, permissions: perms }),
+            body: JSON.stringify({ name, description: desc}), //permissions: perms 
             credentials: 'include'
         });
 
@@ -112,7 +105,7 @@ async function triggerSuspendProfile() {
 
     try {
         // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`/api/profiles/${p.id}/status`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles/${p.id}/status`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'

@@ -16,13 +16,13 @@ async function triggerLogin(event) {
 
     try {
         // 1. Fetch connection pointing directly to the backend Blueprint routing prefix
-        const response = await fetch('/api/login', {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username: emailInput, // Matches data.get("username") in Flask
+                email: emailInput, // Matches data.get("email") in Flask
                 password: passwordInput // Matches data.get("password") in Flask
             }),
             credentials: 'include' // Transmits and handles Flask session cookies automatically
@@ -50,7 +50,6 @@ async function triggerLogin(event) {
             role: data.account.account_type,
             profile: data.account.profile_id,
             status: data.account.status || "Active",
-            permissions: data.account.permissions || []
         };
 
         document.getElementById("loginForm").reset();

@@ -12,6 +12,7 @@ class UserProfile(db.Model):
     profile_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     account_type = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.String(255), nullable=False)
     is_suspended = db.Column(db.Boolean, default=False)
 
     @staticmethod
@@ -22,18 +23,17 @@ class UserProfile(db.Model):
             UserProfile.query.filter_by(account_type=account_type).exists()).scalar()
 
     @classmethod
-    def create_user_profile(cls, profile_name): 
-        account_type = profile_name.replace(" ","")
+    def create_user_profile(cls, name, account_type, description): 
 
         if cls.check_existing(account_type):
-            return False
+            return None
 
         else:
             try:
-                new_profile = cls(name=profile_name, account_type=account_type)
+                new_profile = cls(name=name, account_type=account_type, description = description)
                 db.session.add(new_profile)
                 db.session.commit()
-                return True
+                return new_profile
 
             except IntegrityError as e:
                 db.session.rollback()
