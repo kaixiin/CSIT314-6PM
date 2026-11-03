@@ -5,10 +5,10 @@
 //
 // Connected to the real backend.
 //
-// NOTE for the backend dev: these endpoints (/api/companies, POST/PUT/DELETE)
-// are *assumed* to follow the same REST pattern as /api/profiles and
-// /api/accounts -- please confirm the real paths/response shape and update
-// this file if they're different.
+// NOTE for the backend dev: these endpoints (/api/id/companies, POST/PUT/DELETE)
+// are *assumed* to follow the same REST pattern as /api/admin/profiles and
+// /api/admin/accounts -- please confirm the real paths/response shape and
+// update this file if they're different.
 
 async function triggerCreateCompanyProfile(event) {
     event.preventDefault();
@@ -16,7 +16,6 @@ async function triggerCreateCompanyProfile(event) {
 
     const name = document.getElementById('cname').value.trim();
     const desc = document.getElementById('cdesc').value.trim();
-    const services = [...event.target.querySelectorAll('.perms input[type="checkbox"]:checked')].map(c => c.value);
     const email = document.getElementById('cemail').value.trim();
     const phone = document.getElementById('cphone').value.trim();
     const addr = document.getElementById('caddr').value.trim();
@@ -26,12 +25,12 @@ async function triggerCreateCompanyProfile(event) {
     msg("ccCreateMsg", "Creating company profile...", false);
 
     try {
-        const response = await fetch('/api/companies', {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, description: desc, services, email, phone, address: addr }),
+            body: JSON.stringify({ name, description: desc, email, phone, address: addr }),
             credentials: 'include'
         });
 
@@ -64,19 +63,18 @@ async function triggerUpdateCompanyProfile(event) {
 
     const name = document.getElementById('ecname').value.trim();
     const desc = document.getElementById('ecdesc').value.trim();
-    const services = [...event.target.querySelectorAll('.perms input[type="checkbox"]:checked')].map(c => c.value);
     const email = document.getElementById('ecemail').value.trim();
     const phone = document.getElementById('ecphone').value.trim();
     const addr = document.getElementById('ecaddr').value.trim();
 
     try {
         // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`/api/companies/${me.id}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies/${me.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, description: desc, services, email, phone, address: addr }),
+            body: JSON.stringify({ name, description: desc, email, phone, address: addr }),
             credentials: 'include'
         });
 
@@ -113,7 +111,7 @@ async function triggerDeleteCompanyProfile() {
 
     try {
         // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`/api/companies/${me.id}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies/${me.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

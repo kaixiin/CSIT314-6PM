@@ -25,13 +25,13 @@ const $ = id => document.getElementById(id);
 
 // ---- Backend data loaders ----
 // NOTE for the backend dev: these GET endpoints are *assumed* to follow the
-// same /api/profiles, /api/accounts, /api/companies paths already used for
+// same /api/admin/profiles, /api/admin/accounts, /api/id/companies paths already used for
 // create/update/delete -- please confirm the real paths and response shape
 // (an array directly, vs. {profiles: [...]} etc.) and adjust the `|| data ||`
 // fallbacks below if needed.
 async function fetchProfiles() {
   try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/profiles`, { credentials: 'include' });
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles`, { credentials: 'include' });
     const data = await res.json();
     profiles = data.profiles || data || [];
   } catch (error) {
@@ -40,7 +40,7 @@ async function fetchProfiles() {
 }
 async function fetchAccounts() {
   try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/accounts`, { credentials: 'include' });
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts`, { credentials: 'include' });
     const data = await res.json();
     accounts = data.accounts || data || [];
   } catch (error) {
@@ -49,7 +49,7 @@ async function fetchAccounts() {
 }
 async function fetchCompanyProfile(accountId) {
   try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/companies/${accountId}`, { credentials: 'include' });
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies/${accountId}`, { credentials: 'include' });
     if (res.status === 404) { delete companyProfiles[accountId]; return; }
     const data = await res.json();
     companyProfiles[accountId] = data.company || data;
@@ -60,7 +60,7 @@ async function fetchCompanyProfile(accountId) {
 async function fetchCompanies(query) {
   try {
     const qs = query ? `?q=${encodeURIComponent(query)}` : '';
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/companies${qs}`, { credentials: 'include' });
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies${qs}`, { credentials: 'include' });
     const data = await res.json();
     otherCompanies = data.companies || data || [];
   } catch (error) {
@@ -163,7 +163,6 @@ function renderCompanyView() {
   if (!p) return;
   $("vName").textContent = p.name;
   $("vDesc").textContent = p.desc;
-  $("vTags").innerHTML = p.services.map(s => `<span class="tag">${esc(s)}</span>`).join("");
   $("vEmail").textContent = p.email;
   $("vPhone").textContent = p.phone || "Not provided";
   $("vAddr").textContent = p.addr || "Not provided";
@@ -190,7 +189,6 @@ function openCompetitor(i) {
   if (!c) return;
   $("xName").textContent = c.name;
   $("xDesc").textContent = c.desc;
-  $("xTags").innerHTML = c.services.map(s => `<span class="tag">${esc(s)}</span>`).join("");
   show("competitorView");
 }
 function fillCompanyEditForm() {
@@ -201,10 +199,6 @@ function fillCompanyEditForm() {
   $("ecemail").value = p.email;
   $("ecphone").value = p.phone || "";
   $("ecaddr").value = p.addr || "";
-  $("svcDesign").checked = p.services.includes("Interior Design");
-  $("svcReno").checked = p.services.includes("Renovation");
-  $("svcSpace").checked = p.services.includes("Space Planning");
-  $("svcFurn").checked = p.services.includes("Furniture Sourcing");
 }
 
 // Shared confirmation modal -- replaces the browser's native confirm()

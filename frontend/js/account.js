@@ -20,7 +20,7 @@ async function triggerCreateAccount(event) {
     msg("accountMsg", "Creating user account...", false);
 
     try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/accounts`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -67,7 +67,7 @@ async function triggerUpdateAccount(event) {
 
     try {
         // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/accounts/${a.id}`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts/${a.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -110,7 +110,7 @@ async function triggerSuspendAccount() {
 
     try {
         // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/accounts/${a.id}/status`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts/${a.id}/status`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
