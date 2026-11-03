@@ -43,7 +43,7 @@ New frontend files go in their role's folder and get a `<script>` tag in `index.
 
 ### Adding a new feature
 1. Add or extend a model in `models/` (e.g. `user_account.py`).
-2. Add a controller in `controllers/` named after the user story (e.g. `create_user_profile_controller.py`).
+2. Add a controller class in `controllers/` (e.g. `CreateUserProfileC` in `admin_controller.py`).
 3. Add a boundary in `boundaries/` named after the user story (e.g. `create_user_profile_boundary.py`).
 4. Add the route to the role's blueprint in `routes/` (and register new blueprints in `app.py`).
 

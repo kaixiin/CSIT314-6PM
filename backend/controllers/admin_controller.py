@@ -1,6 +1,6 @@
-# Controller: CreateUserProfileC
+# Controller: CreateUserProfile_C
 # Methods:
-#   create_user_profile(name, account_type, description): UserProfile
+#   create_userProfile(self, name)
 # Calls: UserProfile.create_user_profile() in models/user_profile.py
         
 
