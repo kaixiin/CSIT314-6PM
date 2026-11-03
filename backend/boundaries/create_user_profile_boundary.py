@@ -2,7 +2,7 @@
 # Methods:
 #   login(data): checks the input, calls UserLoginC, then shows success or fail
 #   display_success(account)
-#   display_fail()
+#   display_fail(message)
 # Calls: CreateUserProfileC.execute() in controllers/admin_controller.py
 
 from flask import jsonify
@@ -18,8 +18,8 @@ class CreateUserProfilePg:
             return self.display_fail("Invalid input format")
             
         profile_name = profile_name.strip()
-        description = data.get("description") if isinstance(data, dict) else None
-        description = description.strip()
+        description = data.get("description")
+        description = description.strip() if isinstance(description, str) else ""
 
         if not profile_name or not description:
             return self.display_fail("Profile name or description cannot be empty")
@@ -29,6 +29,8 @@ class CreateUserProfilePg:
         result = CreateUserProfileC().create_user_profile(profile_name, account_type, description)
 
         if result is None:
+            return self.display_fail("Profile name already exists")
+        if not result:  # entity returns False when saving fails
             return self.display_fail()
         
         return self.display_success(result)
@@ -45,8 +47,8 @@ class CreateUserProfilePg:
             }
         }), 201
 
-    def display_fail(self):
+    def display_fail(self, message="Create User Profile Failed"):
         return jsonify({
-            "success": False, 
-            "message": "Create User Profile Failed"
+            "success": False,
+            "message": message
         }), 400
