@@ -1,7 +1,7 @@
 from flask import Blueprint, request, session, jsonify
 from boundaries.create_user_profile_boundary import CreateUserProfilePg
 from boundaries.view_all_user_profiles_boundary import ViewAllUserProfilePg
-
+from boundaries.view_user_profile_boundary import ViewUserProfilePg
 
 # All routes here will automatically require "UserAdmin"
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
@@ -26,5 +26,10 @@ def admin_create_profile():
     return CreateUserProfilePg().create_user_profile(form_data)
 
 @admin_bp.route("/profiles", methods=["GET"])
-def admin_view_all_profile():
+def admin_view_all_profiles():
     return ViewAllUserProfilePg().view_all_user_profiles()
+
+@admin_bp.route("/profiles/<int:profile_id>", methods=["GET"])
+def admin_view_single_profile(profile_id):
+    """View individual user profile by ID"""
+    return ViewUserProfilePg().view_user_profile(profile_id)

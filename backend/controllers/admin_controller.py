@@ -20,5 +20,18 @@ class CreateUserProfileC:
 # Calls: UserProfile.view_all_user_profiles() in models/user_profile.py
  
 class ViewAllUserProfileC:
-    def view_all_user_profiles():
+    def view_all_user_profiles(self):
         return UserProfile.view_all_user_profiles()
+
+# -----------------------------------------
+# VIEW UP - #4(#126)
+# Controller: ViewUserProfileC
+# Methods:
+#   view_user_profile()
+# Calls: UserProfile.view_user_profile() in models/user_profile.py
+ 
+class ViewUserProfileC:
+    def view_user_profile(self, profile_id):
+        profile = UserProfile.view_user_profile(profile_id)
+
+        return profile

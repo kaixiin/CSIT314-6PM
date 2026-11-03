@@ -48,7 +48,7 @@ class UserProfile(db.Model):
                 print(f"An unexpected error occurred: {e}")
                 return False
 
-    #VIEW ALL USER PROFILE
+    #VIEW ALL USER PROFILES
     @classmethod
     def view_all_user_profiles(cls): 
 
@@ -60,3 +60,14 @@ class UserProfile(db.Model):
             print(f"Error fetching user profiles: {e}")
             return None 
 
+    #VIEW USER PROFILE - #4 (#126)
+    @classmethod
+    def view_user_profile(cls, profile_id): 
+            
+            try:
+                profile = cls.query.get(profile_id)
+                return profile
+                
+            except Exception as e:
+                print(f"Error fetching user profiles: {e}")
+                return None 
