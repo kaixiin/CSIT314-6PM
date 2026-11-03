@@ -23,7 +23,6 @@ function profileRow(p) {
     <div style="flex:1">
       <div class="nm">${esc(p.name)} ${badge(p.status)}</div>
       <div class="sub">${esc(p.desc) || "No description"}</div>
-      <div class="sub">${p.perms.join(", ") || "No permissions set"}</div>
     </div>
     <div class="chev">&rsaquo;</div>
   </div>`;
@@ -42,7 +41,8 @@ function accountRow(a) {
 function renderProfileList(filter) {
   const q = (filter || "").trim().toLowerCase();
   const matches = profiles.filter(p => p.name.toLowerCase().includes(q));
-  $("profileList").innerHTML = matches.length ? matches.map(profileRow).join("") : `<div class="empty">No profiles match "${esc(filter)}".</div>`;
+  $("profileList").innerHTML = matches.length ? matches.map(profileRow).join("")
+    : `<div class="empty">${q ? `No profiles match "${esc(filter)}".` : "No user profiles found."}</div>`;
 }
 function renderAccountList(filter) {
   const q = (filter || "").trim().toLowerCase();
@@ -58,9 +58,6 @@ function openProfile(id) {
   $("pdBadge").textContent = p.status;
   $("pdUsername").value = p.name;
   $("pdDesc").value = p.desc;
-  $("pdEdit").checked = p.perms.includes("Edit");
-  $("pdView").checked = p.perms.includes("View");
-  $("pdUpdate").checked = p.perms.includes("Update");
   $("pdSuspendBtn").textContent = p.status === "Suspended" ? "Reactivate" : "Suspend";
   msg("profileDetailMsg", "Review and update this profile's details, or " + (p.status === "Suspended" ? "reactivate it to restore login access." : "suspend it to block members from logging in."));
   show("profileDetail");
