@@ -3,10 +3,10 @@
 #   create_user_profile(data): checks the input, calls CreateUserProfileC, then shows success or fail
 #   display_success(user_profile)
 #   display_fail(message)
-# Calls: CreateUserProfileC.create_user_profile() in controllers/create_user_profile_controller.py
+# Calls: CreateUserProfileC.create_user_profile() in controllers/CreateUserProfileC.py
 
 from flask import jsonify
-from controllers.create_user_profile_controller import CreateUserProfileC
+from controllers.CreateUserProfileC import CreateUserProfileC
 
 class CreateUserProfilePg:
     def create_user_profile(self, data):

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, session, jsonify
-from boundaries.create_user_profile_boundary import CreateUserProfilePg
+from boundaries.CreateUserProfilePg import CreateUserProfilePg
 
 # All routes here will automatically require "UserAdmin"
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
