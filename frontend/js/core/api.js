@@ -19,8 +19,8 @@ async function fetchProfiles(query) {
       profiles = [];
       return;
     }
-    const data = await res.json();
-    profiles = (data.profiles || []).map(toProfile);
+    const body = await res.json();
+    profiles = (body.data || []).map(toProfile);
   } catch (error) {
     console.error('Failed to load profiles:', error);
     profiles = [];
