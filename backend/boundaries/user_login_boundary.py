@@ -10,7 +10,7 @@ from controllers.user_login_controller import UserLoginC
 
 class UserLoginPg:
     def login(self, data):
-        username = data.get("username") if isinstance(data, dict) else None
+        username = data.get("email") if isinstance(data, dict) else None
         password = data.get("password") if isinstance(data, dict) else None
 
         # input checks belong to the boundary

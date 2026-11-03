@@ -18,19 +18,19 @@ class UserAccount(db.Model):
     is_suspended = db.Column(db.Boolean, default=False)
 
     @staticmethod
-    def find_by_username(username):
+    def find_by_email(email):
         """Return account with this username, or None."""
-        return UserAccount.query.filter_by(username=username).first()
+        return UserAccount.query.filter_by(email=email).first()
 
     def check_password(self, password):
         """True if the password matches. Plain-text compare for now."""
         return self.password == password
 
     @staticmethod
-    def verify_login(username, password):
+    def verify_login(email, password):
         """Return matching UserAccount, or None if the login fails."""
-        account = UserAccount.find_by_username(username)
-        if account is None or account.is_suspended:
+        account = UserAccount.find_by_email(email)
+        if account is None or account.is_suspended or account.profile.is_suspended:
             return None
         if not account.check_password(password):
             return None

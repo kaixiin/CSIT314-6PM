@@ -6,10 +6,9 @@
 
 from models.user_profile import UserProfile
 
-class CreateUserProfile_C:
+class CreateUserProfileC:
 
-    def execute(self, data):
+    def create_user_profile(self, name, account_type, description):
+        new_profile = UserProfile.create_user_profile(name, account_type, description)
         
-        profile_name = data.get("name")
-        return UserProfile.create_user_profile(profile_name) 
-        
+        return new_profile
