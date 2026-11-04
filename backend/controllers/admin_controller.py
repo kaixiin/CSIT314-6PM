@@ -35,3 +35,15 @@ class ViewUserProfileC:
         profile = UserProfile.view_user_profile(profile_id)
 
         return profile
+
+# -----------------------------------------
+# UPDATE UP - #5(#127)
+# Controller: UpdateUserProfileC
+# Methods:
+#   update_user_profile()
+# Calls: UserProfile.update_user_profile() in models/user_profile.py
+ 
+class UpdateUserProfileC:
+    def update_user_profile(cls, profile_id, name=None, account_type=None, description=None): 
+        return UserProfile.update_user_profile(profile_id, name, account_type, description)
+

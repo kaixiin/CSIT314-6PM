@@ -71,3 +71,37 @@ class UserProfile(db.Model):
             except Exception as e:
                 print(f"Error fetching user profiles: {e}")
                 return None 
+
+    #UPDATE USER PROFILE - #5 (#127)
+    @classmethod
+    def update_user_profile(cls, profile_id, name=None, account_type=None, description=None): 
+            
+        try:
+            profile = cls.query.get(profile_id)
+
+            if profile is None:
+                return None
+
+            if account_type is not None:
+                if account_type != profile.account_type:
+                    exist = cls.check_existing(account_type)
+                    if exist:
+                        return False
+                profile.account_type = account_type
+                profile.name = name
+
+            if description is not None:
+                profile.description = description
+
+            db.session.commit()
+            return True
+      
+        except IntegrityError as e:
+            db.session.rollback()
+            print(f"Database Integrity Error: {e.orig}")
+            return False
+    
+        except Exception as e:
+            db.session.rollback()
+            print(f"An unexpected error occurred: {e}")
+            return False

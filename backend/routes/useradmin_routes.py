@@ -2,6 +2,7 @@ from flask import Blueprint, request, session, jsonify
 from boundaries.create_user_profile_boundary import CreateUserProfilePg
 from boundaries.view_all_user_profiles_boundary import ViewAllUserProfilePg
 from boundaries.view_user_profile_boundary import ViewUserProfilePg
+from boundaries.update_user_profile_boundary import UpdateUserProfilePg
 
 # All routes here will automatically require "UserAdmin"
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
@@ -19,17 +20,25 @@ def restrict_to_admins():
 
 # Admin-only functions
 @admin_bp.route("/profiles", methods=["POST", "OPTIONS"])
-def admin_create_profile():
+def admin_create_user_profile():
     if request.method == "OPTIONS":
         return "", 200
     form_data = request.get_json(silent=True) or {}
     return CreateUserProfilePg().create_user_profile(form_data)
 
 @admin_bp.route("/profiles", methods=["GET"])
-def admin_view_all_profiles():
+def admin_view_all_user_profiles():
     return ViewAllUserProfilePg().view_all_user_profiles()
 
 @admin_bp.route("/profiles/<profile_id>", methods=["GET"])
-def admin_view_single_profile(profile_id):
+def admin_view_single_user_profile(profile_id):
     """View individual user profile by ID"""
     return ViewUserProfilePg().view_user_profile(profile_id)
+
+@admin_bp.route("/profiles/<profile_id>", methods=["PUT","OPTIONS"])
+def admin_update_user_profile(profile_id):
+    if request.method == "OPTIONS":
+            return "", 200
+
+    data = request.get_json(silent=True) or {}
+    return UpdateUserProfilePg().update_user_profile(profile_id, data)
