@@ -1,7 +1,7 @@
 // company.js
 // ID role: create / view / update / delete Company Profile (#15-#18).
 // Browsing/searching other companies (#19) is read-only and already
-// handled by renderCompanyList()/openCompetitor() in state.js.
+// handled by renderCompanyList()/openCompetitor() in core/ui.js.
 //
 // Connected to the real backend.
 //

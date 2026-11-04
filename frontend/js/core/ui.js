@@ -1,80 +1,7 @@
-// state.js
-// Shared app state, backend data loaders, and view-routing/render plumbing
-// used by every role's screens. login.js / auth.js / profile.js / account.js /
-// company.js all depend on the globals defined here, so this file must load
-// FIRST, before any of them.
-//
-// No more seeded demo data -- the backend database is the single source of
-// truth. These arrays start empty and get filled in by the fetch*() loaders
-// below, called right after login and after any create/update/suspend/delete
-// action. Screens render from whatever was most recently fetched into them.
-
-let accounts = [];
-let profiles = [];
-// Company profiles, keyed by account id. Empty = that ID hasn't created one yet
-// (or it just hasn't been fetched yet).
-let companyProfiles = {};
-// Other IDs' company profiles, for #19 Search Company Profile (competitor research).
-let otherCompanies = [];
-
-const PARENT = {create:"profiles", newAccount:"accounts", profileDetail:"profiles", accountDetail:"accounts",
-                ccCreate:"ccView", ccEdit:"ccView", ccNoProfile:"ccView", competitorView:"browseCompanies"};
-let me = null, openProfileId = null, openAccountId = null;
-
-const $ = id => document.getElementById(id);
-
-// ---- Backend data loaders ----
-// NOTE for the backend dev: these GET endpoints are *assumed* to follow the
-// same /api/admin/profiles, /api/admin/accounts, /api/id/companies paths already used for
-// create/update/delete -- please confirm the real paths and response shape
-// (an array directly, vs. {profiles: [...]} etc.) and adjust the `|| data ||`
-// fallbacks below if needed.
-async function fetchProfiles() {
-  try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles`, { credentials: 'include' });
-    const data = await res.json();
-    profiles = data.profiles || data || [];
-  } catch (error) {
-    console.error('Failed to load profiles:', error);
-  }
-}
-async function fetchAccounts() {
-  try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts`, { credentials: 'include' });
-    const data = await res.json();
-    accounts = data.accounts || data || [];
-  } catch (error) {
-    console.error('Failed to load accounts:', error);
-  }
-}
-async function fetchCompanyProfile(accountId) {
-  try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies/${accountId}`, { credentials: 'include' });
-    if (res.status === 404) { delete companyProfiles[accountId]; return; }
-    const data = await res.json();
-    companyProfiles[accountId] = data.company || data;
-  } catch (error) {
-    console.error('Failed to load company profile:', error);
-  }
-}
-async function fetchCompanies(query) {
-  try {
-    const qs = query ? `?q=${encodeURIComponent(query)}` : '';
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies${qs}`, { credentials: 'include' });
-    const data = await res.json();
-    otherCompanies = data.companies || data || [];
-  } catch (error) {
-    console.error('Failed to load companies:', error);
-  }
-}
-
-// Works out an account's actual role from its data. Login has no role
-// dropdown -- role is always derived from the matched account, never picked
-// by the user. This matches the UCD/SQ: login only takes email + password.
-const ROLE_BY_TYPE = { UserAdmin: "admin", InteriorDesigner: "id", Customer: "customer", PlatformManager: "pm" };
-const roleOfAccount = a => a ? (ROLE_BY_TYPE[a.role] || "user") : null;
-
-const roleOf = () => roleOfAccount(me);
+// ui.js
+// Screen helpers, list/detail rendering, the confirmation dialog, the central
+// view router show(), and navigation click handling.
+// Loads after state.js and api.js.
 
 const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const msg = (id, text, err) => { $(id).textContent = text; $(id).className = "msg" + (err ? " err" : ""); };
@@ -96,7 +23,6 @@ function profileRow(p) {
     <div style="flex:1">
       <div class="nm">${esc(p.name)} ${badge(p.status)}</div>
       <div class="sub">${esc(p.desc) || "No description"}</div>
-      <div class="sub">${p.perms.join(", ") || "No permissions set"}</div>
     </div>
     <div class="chev">&rsaquo;</div>
   </div>`;
@@ -115,7 +41,8 @@ function accountRow(a) {
 function renderProfileList(filter) {
   const q = (filter || "").trim().toLowerCase();
   const matches = profiles.filter(p => p.name.toLowerCase().includes(q));
-  $("profileList").innerHTML = matches.length ? matches.map(profileRow).join("") : `<div class="empty">No profiles match "${esc(filter)}".</div>`;
+  $("profileList").innerHTML = matches.length ? matches.map(profileRow).join("")
+    : `<div class="empty">${q ? `No profiles match "${esc(filter)}".` : "No user profiles found."}</div>`;
 }
 function renderAccountList(filter) {
   const q = (filter || "").trim().toLowerCase();
@@ -131,9 +58,6 @@ function openProfile(id) {
   $("pdBadge").textContent = p.status;
   $("pdUsername").value = p.name;
   $("pdDesc").value = p.desc;
-  $("pdEdit").checked = p.perms.includes("Edit");
-  $("pdView").checked = p.perms.includes("View");
-  $("pdUpdate").checked = p.perms.includes("Update");
   $("pdSuspendBtn").textContent = p.status === "Suspended" ? "Reactivate" : "Suspend";
   msg("profileDetailMsg", "Review and update this profile's details, or " + (p.status === "Suspended" ? "reactivate it to restore login access." : "suspend it to block members from logging in."));
   show("profileDetail");
@@ -157,7 +81,7 @@ function openAccount(id) {
 // NOTE: these only *render* company-profile data onto the screen. The actual
 // create / update / delete form handlers for the ID role (companyCreateForm,
 // companyEditForm, #ccDeleteBtn, #companySearch) are NOT wired here -- that's
-// the Sprint 3 JS to be added separately (e.g. js/company.js).
+// the Sprint 3 JS to be added separately (js/id/company.js).
 function renderCompanyView() {
   const p = companyProfiles[me.id];
   if (!p) return;

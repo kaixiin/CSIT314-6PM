@@ -66,7 +66,7 @@ async function triggerLogin(event) {
             await fetchCompanyProfile(me.id);
         }
 
-        // show() in state.js works out which screen this role lands on.
+        // show() in core/ui.js works out which screen this role lands on.
         show("dash");
 
     } catch (error) {
