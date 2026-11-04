@@ -29,7 +29,7 @@ def admin_create_profile():
 def admin_view_all_profiles():
     return ViewAllUserProfilePg().view_all_user_profiles()
 
-@admin_bp.route("/profiles/<int:profile_id>", methods=["GET"])
+@admin_bp.route("/profiles/<profile_id>", methods=["GET"])
 def admin_view_single_profile(profile_id):
     """View individual user profile by ID"""
     return ViewUserProfilePg().view_user_profile(profile_id)
