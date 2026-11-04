@@ -1,12 +1,7 @@
 // account.js
-// Admin: create / view / update / search / suspend User Accounts.
-// Connected to the real backend.
-//
-// NOTE for the backend dev: /api/accounts (POST) matches the endpoint already
-// agreed for Create. The update and suspend endpoints below (PUT /api/accounts/:id
-// and PATCH /api/accounts/:id/status) are *assumed* to follow the same
-// pattern -- please confirm the real paths/response shape and adjust if
-// they're different.
+// Admin: create / update / suspend / reactivate User Accounts (#8, #10, #11).
+// Routes: /api/admin/accounts (see the API Route Sync doc). Search and view
+// (#12, #9) load through fetchAccounts() in js/core/api.js.
 
 async function triggerCreateAccount(event) {
     event.preventDefault();
@@ -15,7 +10,7 @@ async function triggerCreateAccount(event) {
     const fullNameInput = document.getElementById('aname').value.trim();
     const emailInput = document.getElementById('aemail').value.trim().toLowerCase();
     const passwordInput = document.getElementById('apw').value;
-    const selectedProfile = document.getElementById('aprofile').value;
+    const selectedProfile = Number(document.getElementById('aprofile').value);
 
     msg("accountMsg", "Creating user account...", false);
 
@@ -26,7 +21,7 @@ async function triggerCreateAccount(event) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                name: fullNameInput,
+                username: fullNameInput,
                 email: emailInput,
                 password: passwordInput,
                 profile_id: selectedProfile
@@ -37,7 +32,7 @@ async function triggerCreateAccount(event) {
         const data = await response.json();
 
         if (!data.success) {
-            msg("accountMsg", data.message || `Create failed: an account for "${emailInput}" already exists.`, true);
+            msg("accountMsg", data.message || "Create failed: that username or email is already used.", true);
             document.getElementById('aemail').focus();
             return;
         }
@@ -63,23 +58,22 @@ async function triggerUpdateAccount(event) {
 
     const name = document.getElementById('adFullname').value.trim();
     const email = document.getElementById('adEmail').value.trim();
-    const profile = document.getElementById('adProfile').value;
+    const profile_id = Number(document.getElementById('adProfile').value);
 
     try {
-        // ASSUMED endpoint -- confirm with backend dev.
         const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts/${a.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, email, profile }),
+            body: JSON.stringify({ username: name, email, profile_id }),
             credentials: 'include'
         });
 
         const data = await response.json();
 
         if (!data.success) {
-            msg("accountDetailMsg", data.message || `Update failed: an account for "${email}" already exists.`, true);
+            msg("accountDetailMsg", data.message || "Update failed: that username or email is already used.", true);
             return;
         }
 
@@ -109,13 +103,12 @@ async function triggerSuspendAccount() {
     if (!ok) return;
 
     try {
-        // ASSUMED endpoint -- confirm with backend dev.
         const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts/${a.id}/status`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ status: suspending ? "Suspended" : "Active" }),
+            body: JSON.stringify({ is_suspended: suspending }),
             credentials: 'include'
         });
 

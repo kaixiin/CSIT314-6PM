@@ -27,13 +27,17 @@ function profileRow(p) {
     <div class="chev">&rsaquo;</div>
   </div>`;
 }
+const profileName = id => (profiles.find(p => p.id === id) || {}).name || "Unknown";
+const profileOptions = selectedId => profiles.map(p =>
+  `<option value="${p.id}" ${p.id === selectedId ? "selected" : ""}>${esc(p.name)}</option>`).join("");
+
 function accountRow(a) {
   return `<div class="row" data-open-account="${a.id}">
     <div class="ico"></div>
     <div style="flex:1">
       <div class="nm">${esc(a.name)} ${badge(a.status)}</div>
       <div class="sub">${esc(a.email)}</div>
-      <div class="sub">${a.role === "admin" ? "System Admin" : "Profile: " + esc(a.profile)}</div>
+      <div class="sub">Profile: ${esc(profileName(a.profileId))}</div>
     </div>
     <div class="chev">&rsaquo;</div>
   </div>`;
@@ -71,7 +75,7 @@ function openAccount(id) {
   $("adBadge").textContent = a.status;
   $("adFullname").value = a.name;
   $("adEmail").value = a.email;
-  $("adProfile").innerHTML = profiles.map(p => `<option ${p.name === a.profile ? "selected" : ""}>${esc(p.name)}</option>`).join("");
+  $("adProfile").innerHTML = profileOptions(a.profileId);
   $("adSuspendBtn").textContent = a.status === "Suspended" ? "Reactivate" : "Suspend";
   msg("accountDetailMsg", "Review and update this account's details, or " + (a.status === "Suspended" ? "reactivate it to restore login access." : "suspend it to block the user from logging in."));
   show("accountDetail");
@@ -184,7 +188,7 @@ function show(id) {
     $("stats").innerHTML = `<div class="card"><b>${profiles.length}</b>User profiles</div><div class="card"><b>${accounts.length}</b>Accounts</div>`;
     if (id === "profiles") renderProfileList($("profileSearch").value);
     if (id === "accounts") renderAccountList($("accountSearch").value);
-    $("aprofile").innerHTML = profiles.map(p => `<option>${esc(p.name)}</option>`).join("");
+    $("aprofile").innerHTML = profileOptions();
   } else if (r === "id") {
     if (id === "ccView") renderCompanyView();
     if (id === "ccEdit") fillCompanyEditForm();
@@ -212,7 +216,7 @@ document.addEventListener("click", async e => {
   if (go === "newAccount") { msg("accountMsg", "Create a login for a new user and assign a profile."); await fetchProfiles(); }
   if (go === "ccCreate") msg("ccCreateMsg", "Tell customers who you are so they can find and contact you.");
   if (go === "profiles") await fetchProfiles();
-  if (go === "accounts") await fetchAccounts();
+  if (go === "accounts") { await fetchProfiles(); await fetchAccounts(); }
   if (go === "browseCompanies") await fetchCompanies();
   if (go === "ccView" && me) await fetchCompanyProfile(me.id);
   show(go);

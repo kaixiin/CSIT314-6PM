@@ -3,8 +3,9 @@ from flask_cors import CORS
 from sqlalchemy.sql import text
 from config import Config
 from extensions import db
-from routes.auth_routes import auth_bp  #registered for Login/Logout authentication 
+from routes.auth_routes import auth_bp  #registered for Login/Logout authentication
 from routes.useradmin_routes import admin_bp  #registered for Admin functions
+from routes.user_account_routes import user_account_bp  #registered for User Account functions
 
 def create_app():
     app = Flask(__name__)
@@ -15,10 +16,11 @@ def create_app():
         "origins": ["http://127.0.0.1:5500", "http://localhost:5500"]
     }
     })
-    
+
     #register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(user_account_bp)
 
     #db health check route
     @app.route('/')
