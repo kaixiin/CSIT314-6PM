@@ -13,23 +13,24 @@ class ViewUserProfilePg:
         profile = ViewUserProfileC().view_user_profile(profile_id)
         
         if profile is None:
-            return jsonify({
-                'success': False,
-                'message': f'User profile ID {profile_id} not found'
-            }), 200
+            return self.display_fail(f"Profile ID {profile_id} cannot be found")
 
-        profile_data = [
-            {
-                'profile_id': profile.profile_id,
-                'name': profile.name,
-                'account_type': profile.account_type,
-                'description': profile.description,
-                'is_suspended': profile.is_suspended
-            }
-        ]
+        return self.display_user_profile(profile)
 
+    def display_user_profile(self, profile):
         return jsonify({
-            'success': True,
-            'message': f'Found profile id {profile_id}',
-            'data': profile_data
+            "success": True,
+            "profile": {
+                "profile_id": profile.profile_id,
+                "name": profile.name,
+                "account_type": profile.account_type,
+                "description":profile.description,
+                "is_suspended": profile.is_suspended
+            }
+        }), 200
+
+    def display_fail(self, message="Find User Profile Failed"):
+        return jsonify({
+                        'success': False,
+                        'message': message
         }), 200

@@ -10,22 +10,14 @@ from controllers.admin_controller import ViewAllUserProfileC
 
 class ViewAllUserProfilePg:
     def view_all_user_profiles(self):
-        
+        print('inviewall')
         all_profiles = ViewAllUserProfileC().view_all_user_profiles()
         
-        
         if all_profiles is None:
-            return jsonify({
-                'success': False,
-                'message': 'Error retrieving user profiles'
-            }), 200
+            return self.display_fail(f'Failed to retrieve profiles')
 
         if len(all_profiles) == 0:
-            return jsonify({
-                'success': True,
-                'message': 'No user profiles found',
-                'data': []
-            }), 200
+            return self.display_fail(True, f'No profiles to display')
 
         all_profiles_data = [
             {
@@ -38,10 +30,17 @@ class ViewAllUserProfilePg:
             for p in all_profiles
         ]
 
-        return jsonify({
-            'success': True,
-            'message': f'Found {len(all_profiles)} profile(s)',
-            'data': all_profiles_data
-        }), 200
+        return self.display_user_profiles(all_profiles, all_profiles_data)
 
+    def display_user_profiles(self, all_profiles, data):
+            return jsonify({
+                        'success': True,
+                        'message': f'Found {len(all_profiles)} profile(s)',
+                        'data': data
+                    }), 200
     
+    def display_fail(self, success=False, message="Find User Profiles Failed"):
+        return jsonify({
+                        'success': success,
+                        'message': message
+        }), 200
