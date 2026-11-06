@@ -3,13 +3,13 @@ import binascii
 import os
 import re
 import uuid
+from config import Config
 
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 PHONE_PATTERN = re.compile(r"^[0-9 +()\-]{6,20}$")
 LOGO_PATTERN = re.compile(r"^data:image/(png|jpeg);base64,(.+)$", re.DOTALL)
 MAX_LOGO_BYTES = 5 * 1024 * 1024
-UPLOAD_FOLDER = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads", "logos")
+UPLOAD_FOLDER = Config.UPLOAD_FOLDER
 
 
 def read_company_fields(data):

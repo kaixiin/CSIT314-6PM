@@ -19,4 +19,8 @@ class Config:
 
   SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
+  # Kept outside the project: Live Server reloads the page when a file changes in its folder
+  UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or os.path.join(
+      os.path.expanduser('~'), 'csit314-uploads', 'logos')
+
   

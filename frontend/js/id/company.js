@@ -149,6 +149,9 @@ async function triggerDeleteCompanyProfile() {
     try {
         const response = await fetch(COMPANY_URL, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             credentials: 'include'
         });
 

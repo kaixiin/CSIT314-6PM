@@ -39,6 +39,14 @@ class UserAccount(db.Model):
         return account
 
     @staticmethod
+    def find_active(account_id):
+        """Return the account if it can still use the system, otherwise None."""
+        account = db.session.get(UserAccount, account_id) if account_id is not None else None
+        if account is None or account.is_suspended or account.profile.is_suspended:
+            return None
+        return account
+
+    @staticmethod
     def logout():
         """End the current session."""
         session.clear()

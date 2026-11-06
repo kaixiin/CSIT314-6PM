@@ -2,8 +2,9 @@
 # Boundary: UserLoginPg
 # Methods:
 #   login(data): checks the input, calls UserLoginC, then shows success or fail
+#   current_user(): returns the logged-in account so the page can survive a refresh
 #   display_success(account)
-#   display_fail()
+#   display_fail(message)
 # Calls: UserLoginC.verify_login() in controllers/user_login_controller.py
 
 from flask import session, jsonify
@@ -31,6 +32,13 @@ class UserLoginPg:
         session["account_type"] = account.profile.account_type
         return self.display_success(account)
 
+    def current_user(self):
+        account = UserLoginC().current_user(session.get("account_id"))
+        if account is None:
+            session.clear()
+            return self.display_fail("Not logged in")
+        return self.display_success(account)
+
     def display_success(self, account):
         profile = account.profile
         return jsonify({
@@ -43,5 +51,5 @@ class UserLoginPg:
             },
         }), 200
 
-    def display_fail(self):
-        return jsonify({"success": False, "message": "Login failed"}), 401
+    def display_fail(self, message="Login failed"):
+        return jsonify({"success": False, "message": message}), 401

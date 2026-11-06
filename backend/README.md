@@ -12,6 +12,8 @@
 3. Copy `.env.example` to `.env` and fill in your MySQL password
 4. Run `python app.py`
 
+Uploaded logos are saved to `csit314-uploads/logos` in your home folder, not in the project, because Live Server reloads the page when a file changes in the folder it serves. Set `UPLOAD_FOLDER` in `.env` to use another folder outside the project.
+
 ## Project structure
 Each user story follows the BCE diagrams: route → boundary → controller → entity.
 ```
