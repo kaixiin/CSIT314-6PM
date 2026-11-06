@@ -58,3 +58,14 @@ class SuspendUserProfileC:
     def suspend_user_profile(cls, profile_id, is_suspended): 
         return UserProfile.suspend_user_profile(profile_id, is_suspended)
 
+# -----------------------------------------
+# SEARCH UP - #7
+# Controller: SearchUserProfile
+# Methods:
+#   search_user_profiles()
+# Calls: UserProfile.search_user_profiles() in models/user_profile.py
+ 
+class SearchUserProfileC:
+    def search_user_profiles(cls, keyword): 
+        return UserProfile.search_user_profiles(keyword)
+

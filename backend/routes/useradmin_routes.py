@@ -4,6 +4,7 @@ from boundaries.view_all_user_profiles_boundary import ViewAllUserProfilePg
 from boundaries.view_user_profile_boundary import ViewUserProfilePg
 from boundaries.update_user_profile_boundary import UpdateUserProfilePg
 from boundaries.suspend_user_profile_boundary import SuspendUserProfilePg
+from boundaries.search_user_profile_boundary import SearchUserProfilePg
 
 # All routes here will automatically require "UserAdmin"
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
@@ -50,3 +51,8 @@ def admin_suspend_user_profile(profile_id):
     data = request.get_json(silent=True) or {}
     return SuspendUserProfilePg().suspend_user_profile(profile_id, data)
 
+@admin_bp.route("/profiles?q=", methods=["GET"])
+def admin_search_user_profile(profile_id):
+
+    data = request.get_json(silent=True) or {}
+    return SearchUserProfilePg().search_user_profiles(profile_id, data)

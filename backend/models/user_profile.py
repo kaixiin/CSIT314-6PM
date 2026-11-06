@@ -4,6 +4,7 @@
 
 from extensions import db
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import or_
 
 
 class UserProfile(db.Model):
@@ -125,3 +126,23 @@ class UserProfile(db.Model):
             db.session.rollback()
             print(f"Error setting suspension status: {e}")
             return False    
+
+    #SEARCH USER PROFILE - #7
+    @classmethod
+    def search_user_profiles(cls, keyword):
+        try:
+            search_term = f"%{keyword}%"
+
+            profiles = db.session.query(cls).filter(
+                or_(
+                    cls.name.ilike(search_term),
+                    cls.account_type.ilike(search_term),
+                    cls.description.ilike(search_term)
+                )
+            ).order_by(cls.profile_id).all()
+
+            return profiles
+
+        except Exception as e:
+            print(f"Error searching user profiles: {e}")
+            return None
