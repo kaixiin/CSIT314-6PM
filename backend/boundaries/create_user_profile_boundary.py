@@ -1,37 +1,33 @@
 #CREATE USER PROFILE - #3
 # Boundary: CreateUserProfilePg
 # Methods:
-#   create_user_profile(data): checks the input, calls CreateUserProfileC, then shows success or fail
+#   create_user_profile(data): checks the input with validate_create(), calls CreateUserProfileC, then shows success or fail
 #   display_success(user_profile)
 #   display_fail(message)
 # Calls: CreateUserProfileC.create_user_profile() in controllers/admin_controller.py
 
 from flask import jsonify
 from controllers.admin_controller import CreateUserProfileC
+from boundaries.profile_input import validate_create
 
 class CreateUserProfilePg:
     def create_user_profile(self, data):
         
-        profile_name = data.get("name") if isinstance(data, dict) else None
+        fields, error = validate_create(data)
         
+        if error:
+            return self.display_fail(error)
         
-        if not isinstance(profile_name, str):
-            return self.display_fail("Invalid input format")
-            
-        profile_name = profile_name.strip()
-        description = data.get("description")
-        description = description.strip() if isinstance(description, str) else ""
-
-        if not profile_name or not description:
-            return self.display_fail("Profile name or description cannot be empty")
-
-        account_type = profile_name.replace(" ", "")
-
-        result = CreateUserProfileC().create_user_profile(profile_name, account_type, description)
+        result = CreateUserProfileC().create_user_profile(
+            name=fields['name'],
+            account_type=fields['account_type'],
+            description=fields['description']
+        )
 
         if result is None:
             return self.display_fail("Profile name already exists")
-        if not result:  # entity returns False when saving fails
+        
+        if not result: 
             return self.display_fail()
 
         return self.display_success(result)

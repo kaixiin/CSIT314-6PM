@@ -54,20 +54,14 @@ async function triggerUpdateProfile(event) {
 
     const name = document.getElementById('pdUsername').value.trim();
     const desc = document.getElementById('pdDesc').value.trim();
-    const perms = [
-        document.getElementById('pdEdit').checked && "Edit",
-        document.getElementById('pdView').checked && "View",
-        document.getElementById('pdUpdate').checked && "Update"
-    ].filter(Boolean);
 
     try {
-        // ASSUMED endpoint -- confirm with backend dev.
         const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles/${p.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, description: desc}), //permissions: perms 
+            body: JSON.stringify({ name, description: desc }),
             credentials: 'include'
         });
 
@@ -104,13 +98,12 @@ async function triggerSuspendProfile() {
     if (!ok) return;
 
     try {
-        // ASSUMED endpoint -- confirm with backend dev.
         const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/profiles/${p.id}/status`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ status: suspending ? "Suspended" : "Active" }),
+            body: JSON.stringify({ is_suspended: suspending }),
             credentials: 'include'
         });
 

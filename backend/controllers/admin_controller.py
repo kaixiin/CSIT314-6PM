@@ -35,3 +35,37 @@ class ViewUserProfileC:
         profile = UserProfile.view_user_profile(profile_id)
 
         return profile
+
+# -----------------------------------------
+# UPDATE UP - #5(#127)
+# Controller: UpdateUserProfileC
+# Methods:
+#   update_user_profile()
+# Calls: UserProfile.update_user_profile() in models/user_profile.py
+ 
+class UpdateUserProfileC:
+    def update_user_profile(cls, profile_id, name=None, account_type=None, description=None): 
+        return UserProfile.update_user_profile(profile_id, name, account_type, description)
+
+# -----------------------------------------
+# SUSPEND UP - #6(#128)
+# Controller: SuspendUserProfileC
+# Methods:
+#   suspend_user_profile()
+# Calls: UserProfile.suspend_user_profile() in models/user_profile.py
+ 
+class SuspendUserProfileC:
+    def suspend_user_profile(cls, profile_id, is_suspended): 
+        return UserProfile.suspend_user_profile(profile_id, is_suspended)
+
+# -----------------------------------------
+# SEARCH UP - #7
+# Controller: SearchUserProfile
+# Methods:
+#   search_user_profiles()
+# Calls: UserProfile.search_user_profiles() in models/user_profile.py
+ 
+class SearchUserProfileC:
+    def search_user_profiles(cls, keyword): 
+        return UserProfile.search_user_profiles(keyword)
+
