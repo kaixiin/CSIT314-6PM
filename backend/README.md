@@ -23,7 +23,7 @@ backend/
   boundaries/       Boundary layer: one file per user story, checks input and builds the response
   controllers/      Controller layer: one file per user story, passes values to the entity
   models/           Entity layer: classes that read/write the database tables
-  database/         schema.sql and seed.sql
+  database/         schema.sql, seed.sql and test data scripts (see database/README.md)
 
 frontend/
   index.html        all screens, one section per role
@@ -38,9 +38,6 @@ frontend/
   js/id/            Interior Designer: company.js            (/api/id)
   js/customer/      Customer                                 (/api/customer)
   js/pm/            Platform Manager                         (/api/pm)
-  controllers/      Controller layer: one file per controller, calls the models
-  routes/           API endpoints the frontend calls, calls the controllers
-  database/         schema.sql, seed.sql and test data scripts (see database/README.md)
 ```
 New frontend files go in their role's folder and get a `<script>` tag in `index.html`, after `core/`.
 
