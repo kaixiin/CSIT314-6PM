@@ -3,34 +3,78 @@
 // Browsing/searching other companies (#19) is read-only and already
 // handled by renderCompanyList()/openCompetitor() in core/ui.js.
 //
-// Connected to the real backend.
-//
-// NOTE for the backend dev: these endpoints (/api/id/companies, POST/PUT/DELETE)
-// are *assumed* to follow the same REST pattern as /api/admin/profiles and
-// /api/admin/accounts -- please confirm the real paths/response shape and
-// update this file if they're different.
+// Connected to the real backend (/api/id/company, company_routes.py). The
+// account comes from the session, so the URL carries no id. Request bodies
+// use the backend's field names; responses are translated by toCompany() in api.js.
+
+const COMPANY_URL = `${API_CONFIG.BASE_URL}/api/id/company`;
+const LOGO_TYPES = ["image/png", "image/jpeg"];
+const MAX_LOGO_BYTES = 5 * 1024 * 1024;
+
+const logoError = file => {
+    if (!LOGO_TYPES.includes(file.type)) return "Logo must be a JPG or PNG image.";
+    if (file.size > MAX_LOGO_BYTES) return "Logo must be 5MB or smaller.";
+    return "";
+};
+
+// The backend takes the logo as a data URL inside the JSON body.
+const readLogo = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+});
+
+// Previews the chosen image straight away. currentLogo() gives the image to go
+// back to if the choice is cancelled or rejected.
+function wireLogoInput(inputId, previewId, msgId, currentLogo) {
+    $(inputId).addEventListener("change", async () => {
+        const file = $(inputId).files[0];
+        const error = file ? logoError(file) : "";
+        if (!file || error) {
+            $(inputId).value = "";
+            showLogo(previewId, currentLogo());
+            if (error) msg(msgId, error, true);
+            return;
+        }
+        try {
+            showLogo(previewId, await readLogo(file));
+        } catch (err) {
+            console.error("Could not read logo file:", err);
+            $(inputId).value = "";
+            showLogo(previewId, currentLogo());
+            msg(msgId, "Could not read that image.", true);
+        }
+    });
+}
+
+// Fields shared by create and update. logo stays undefined when no new file was
+// chosen, so JSON.stringify leaves it out and the backend keeps the current one.
+async function companyBody(prefix, logoInputId) {
+    const file = $(logoInputId).files[0];
+    return {
+        company_name: $(prefix + "name").value.trim(),
+        description: $(prefix + "desc").value.trim(),
+        address: $(prefix + "addr").value.trim(),
+        contact_number: $(prefix + "phone").value.trim(),
+        email: $(prefix + "email").value.trim(),
+        logo: file ? await readLogo(file) : undefined
+    };
+}
 
 async function triggerCreateCompanyProfile(event) {
     event.preventDefault();
     if (roleOf() !== "id") return show("home");
 
-    const name = document.getElementById('cname').value.trim();
-    const desc = document.getElementById('cdesc').value.trim();
-    const email = document.getElementById('cemail').value.trim();
-    const phone = document.getElementById('cphone').value.trim();
-    const addr = document.getElementById('caddr').value.trim();
-
-    if (!name) return;
-
     msg("ccCreateMsg", "Creating company profile...", false);
 
     try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies`, {
+        const response = await fetch(COMPANY_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, description: desc, email, phone, address: addr }),
+            body: JSON.stringify(await companyBody("c", "clogo")),
             credentials: 'include'
         });
 
@@ -46,6 +90,7 @@ async function triggerCreateCompanyProfile(event) {
         await fetchCompanyProfile(me.id);
 
         event.target.reset();
+        showLogo("clogoPreview", "");
         show("ccView");
         flash("Company profile created successfully.");
 
@@ -58,30 +103,22 @@ async function triggerCreateCompanyProfile(event) {
 async function triggerUpdateCompanyProfile(event) {
     event.preventDefault();
     if (roleOf() !== "id") return show("home");
-    const p = companyProfiles[me.id];
-    if (!p) return;
-
-    const name = document.getElementById('ecname').value.trim();
-    const desc = document.getElementById('ecdesc').value.trim();
-    const email = document.getElementById('ecemail').value.trim();
-    const phone = document.getElementById('ecphone').value.trim();
-    const addr = document.getElementById('ecaddr').value.trim();
+    if (!companyProfiles[me.id]) return;
 
     try {
-        // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies/${me.id}`, {
+        const response = await fetch(COMPANY_URL, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, description: desc, email, phone, address: addr }),
+            body: JSON.stringify(await companyBody("ec", "eclogo")),
             credentials: 'include'
         });
 
         const data = await response.json();
 
         if (!data.success) {
-            flash(data.message || "Failed to update company profile.");
+            msg("ccEditMsg", data.message || "Failed to update company profile.", true);
             return;
         }
 
@@ -92,7 +129,7 @@ async function triggerUpdateCompanyProfile(event) {
 
     } catch (error) {
         console.error("Connection error during company profile update:", error);
-        flash("Cannot connect to company profile server.");
+        msg("ccEditMsg", "Cannot connect to company profile server.", true);
     }
 }
 
@@ -110,12 +147,8 @@ async function triggerDeleteCompanyProfile() {
     if (!ok) return;
 
     try {
-        // ASSUMED endpoint -- confirm with backend dev.
-        const response = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies/${me.id}`, {
+        const response = await fetch(COMPANY_URL, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             credentials: 'include'
         });
 
@@ -139,3 +172,5 @@ async function triggerDeleteCompanyProfile() {
 document.getElementById("companyCreateForm").addEventListener("submit", triggerCreateCompanyProfile);
 document.getElementById("companyEditForm").addEventListener("submit", triggerUpdateCompanyProfile);
 document.getElementById("ccDeleteBtn").addEventListener("click", triggerDeleteCompanyProfile);
+wireLogoInput("clogo", "clogoPreview", "ccCreateMsg", () => "");
+wireLogoInput("eclogo", "eclogoPreview", "ccEditMsg", () => (companyProfiles[me.id] || {}).logo);

@@ -425,6 +425,7 @@ button:focus-visible,
   border: 1.5px solid #bbb;
   border-radius: 6px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .nm {
@@ -524,6 +525,33 @@ button:focus-visible,
   text-align: center;
   margin-bottom: 24px;
   cursor: pointer;
+  overflow: hidden;
+}
+
+/* Kept in the page (not display:none) so it can still be reached by keyboard */
+.logo-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.logo-input:focus-visible + .logo-upload {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
+
+.logo-upload img:not([hidden]) + span {
+  display: none;
+}
+
+.logo-upload img,
+.vlogo img,
+.ico img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Read-only "business card" style block, used for both your own
@@ -542,6 +570,7 @@ button:focus-visible,
   border: 1.5px solid #bbb;
   border-radius: 10px;
   margin-bottom: 18px;
+  overflow: hidden;
 }
 
 .vname {
