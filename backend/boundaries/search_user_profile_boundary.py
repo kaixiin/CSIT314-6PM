@@ -3,7 +3,7 @@
 # Methods:
 #   search_user_profile(keyword): c calls SearchUserProfileC, then shows success or fail
 #   display_success(results)
-#   display_fail(message)
+#   display_fail(message, status)
 # Calls: SearchUserProfileC.search_user_profile() in controllers/admin_controller.py
 
 from flask import jsonify
@@ -15,10 +15,7 @@ class SearchUserProfilePg:
         keyword = data.get("q") if isinstance(data, dict) else None
         
         if not isinstance(keyword, str):
-            return jsonify({
-                "success": False,
-                "message": "Search keyword is required"
-            }), 200
+            return self.display_fail('Search keyword is required')
 
         keyword = keyword.strip()
 
@@ -50,8 +47,8 @@ class SearchUserProfilePg:
                     "data": results
                 }), 200
         
-    def display_fail(self, message="Search User Profile Failed"):
+    def display_fail(self, message="Search User Profile Failed", status=400):
         return jsonify({
                         'success': False,
                         'message': message
-        }), 200
+        }), status

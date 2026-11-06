@@ -22,7 +22,7 @@ class UpdateUserProfilePg:
         )
         
         if is_updated is None:
-            return self.display_fail(f'User profile ID {profile_id} not found')
+            return self.display_fail(f'User profile ID {profile_id} not found', 404)
                 
         if is_updated is False:
             return self.display_fail('Failed to update profile. Duplicate account type or database error')
@@ -35,8 +35,8 @@ class UpdateUserProfilePg:
             'message': f'Profile updated successfully',
         }), 200
                 
-    def display_fail(self, message="Update User Profile Failed"):
+    def display_fail(self, message="Update User Profile Failed", status=400):
         return jsonify({
             'success': False,
             'message': message
-        }), 200
+        }), status

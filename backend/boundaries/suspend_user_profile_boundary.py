@@ -3,7 +3,7 @@
 # Methods:
 #   suspend_user_profile(profile_id): checks the input, calls SuspendUserProfileC, then shows success or fail
 #   display_success(user_profile)
-#   display_fail(message)
+#   display_fail(message, status)
 # Calls: SuspendUserProfileC.create_user_profile() in controllers/admin_controller.py
 
 from flask import jsonify
@@ -20,7 +20,7 @@ class SuspendUserProfilePg:
         )
         
         if status is None:
-            return self.display_fail(f'User profile ID {profile_id} not found')
+            return self.display_fail(f'User profile ID {profile_id} not found', 404)
 
         if status is False:
             if is_suspended == True:
@@ -42,8 +42,8 @@ class SuspendUserProfilePg:
                     'message': f'Profile ID {profile_id} successfully {message}'
                 }), 200
         
-    def display_fail(self, message="Suspend User Profile Failed"):
+    def display_fail(self, message="Suspend User Profile Failed", status=400):
         return jsonify({
                         'success': False,
                         'message': message
-        }), 200
+        }), status

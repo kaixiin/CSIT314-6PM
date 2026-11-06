@@ -14,10 +14,10 @@ class ViewAllUserProfilePg:
         all_profiles = ViewAllUserProfileC().view_all_user_profiles()
         
         if all_profiles is None:
-            return self.display_fail(f'Failed to retrieve profiles')
+            return self.display_fail(message='Failed to retrieve profiles')
 
         if len(all_profiles) == 0:
-            return self.display_fail(True, f'No profiles to display')
+            return self.display_fail(True, 'No profiles to display', 200)
 
         all_profiles_data = [
             {
@@ -39,8 +39,8 @@ class ViewAllUserProfilePg:
                         'data': data
                     }), 200
     
-    def display_fail(self, success=False, message="Find User Profiles Failed"):
+    def display_fail(self, success=False, message="Find User Profiles Failed", status=400):
         return jsonify({
                         'success': success,
                         'message': message
-        }), 200
+        }), status
