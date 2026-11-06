@@ -10,7 +10,6 @@ from controllers.admin_controller import ViewAllUserProfileC
 
 class ViewAllUserProfilePg:
     def view_all_user_profiles(self):
-        print('inviewall')
         all_profiles = ViewAllUserProfileC().view_all_user_profiles()
         
         if all_profiles is None:
