@@ -10,9 +10,9 @@ from flask import jsonify
 from controllers.admin_controller import SearchUserProfileC
 
 class SearchUserProfilePg:
-    def search_user_profiles(self, profile_id, data):
-        
-        keyword = data.get("keyword") if isinstance(data, dict) else None
+    def search_user_profiles(self, data):
+        print('insearch')
+        keyword = data.get("q") if isinstance(data, dict) else None
         
         if not isinstance(keyword, str):
             return jsonify({

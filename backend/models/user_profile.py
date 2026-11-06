@@ -54,7 +54,7 @@ class UserProfile(db.Model):
     def view_all_user_profiles(cls): 
 
         try:
-            all_profiles = db.session.order_by(cls.profile_id).all()
+            all_profiles = db.session.query(cls).order_by(cls.profile_id).all()
             return all_profiles
             
         except Exception as e:

@@ -29,8 +29,17 @@ def admin_create_user_profile():
     return CreateUserProfilePg().create_user_profile(form_data)
 
 @admin_bp.route("/profiles", methods=["GET"])
-def admin_view_all_user_profiles():
+def admin_view_or_search_profiles():
+    
+    keyword = request.args.get("q", "").strip()
+    
+    # keyword provided, search
+    if keyword:
+        return SearchUserProfilePg().search_user_profiles({"q": keyword})
+    
+    #  else view all
     return ViewAllUserProfilePg().view_all_user_profiles()
+
 
 @admin_bp.route("/profiles/<profile_id>", methods=["GET"])
 def admin_view_single_user_profile(profile_id):
@@ -51,8 +60,4 @@ def admin_suspend_user_profile(profile_id):
     data = request.get_json(silent=True) or {}
     return SuspendUserProfilePg().suspend_user_profile(profile_id, data)
 
-@admin_bp.route("/profiles?q=", methods=["GET"])
-def admin_search_user_profile(profile_id):
 
-    data = request.get_json(silent=True) or {}
-    return SearchUserProfilePg().search_user_profiles(profile_id, data)
