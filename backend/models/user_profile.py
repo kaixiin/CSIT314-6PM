@@ -53,7 +53,7 @@ class UserProfile(db.Model):
     def view_all_user_profiles(cls): 
 
         try:
-            all_profiles = cls.query.order_by(cls.profile_id).all()
+            all_profiles = db.session.order_by(cls.profile_id).all()
             return all_profiles
             
         except Exception as e:
@@ -65,7 +65,7 @@ class UserProfile(db.Model):
     def view_user_profile(cls, profile_id): 
             
             try:
-                profile = cls.query.get(profile_id)
+                profile = db.session.get(cls, profile_id)
                 return profile
                 
             except Exception as e:
@@ -77,7 +77,7 @@ class UserProfile(db.Model):
     def update_user_profile(cls, profile_id, name=None, account_type=None, description=None): 
             
         try:
-            profile = cls.query.get(profile_id)
+            profile = db.session.get(profile_id)
 
             if profile is None:
                 return None
@@ -108,15 +108,15 @@ class UserProfile(db.Model):
 
     #SUSPEND USER PROFILE - #6 (#128)
     @classmethod
-    def suspend_user_profile(cls, profile_id): 
+    def suspend_user_profile(cls, profile_id, is_suspended=True): 
             
         try:
-            profile = cls.query.get(profile_id)
+            profile = db.session.get(cls, profile_id)
 
             if profile is None:
                 return None
 
-            profile.is_suspend = True
+            profile.is_suspended = is_suspended
 
             db.session.commit()
             return True

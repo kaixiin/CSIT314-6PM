@@ -1,55 +1,49 @@
 #SUSPEND USER PROFILE - #6 (#128)
 # Boundary: SuspendUserProfilePg
 # Methods:
-#   suspend_user_profile(profile_id): checks the input, calls CreateUserProfileC, then shows success or fail
+#   suspend_user_profile(profile_id): checks the input, calls SuspendUserProfileC, then shows success or fail
 #   display_success(user_profile)
 #   display_fail(message)
-# Calls: CreateUserProfileC.create_user_profile() in controllers/admin_controller.py
+# Calls: SuspendUserProfileC.create_user_profile() in controllers/admin_controller.py
 
 from flask import jsonify
-from controllers.admin_controller import CreateUserProfileC
+from controllers.admin_controller import SuspendUserProfileC
 
-class CreateUserProfilePg:
-    def create_user_profile(self, data):
+class SuspendUserProfilePg:
+    def suspend_user_profile(self, profile_id, data):
         
-        profile_name = data.get("name") if isinstance(data, dict) else None
+        is_suspended = data.get('is_suspended')
         
+        status = SuspendUserProfileC().suspend_user_profile(
+            profile_id,
+            is_suspended=is_suspended
+        )
         
-        if not isinstance(profile_name, str):
-            return self.display_fail("Invalid input format")
-            
-        profile_name = profile_name.strip()
-        description = data.get("description")
-        description = description.strip() if isinstance(description, str) else ""
+        if status is None:
+            return self.display_fail(f'User profile ID {profile_id} not found')
 
-        if not profile_name or not description:
-            return self.display_fail("Profile name or description cannot be empty")
+        if status is False:
+            if is_suspended == True:
+                        message = 'suspend'
+            elif is_suspended == False:
+                        message = 'reactivate'
+            return self.display_fail(f'Failed to {message} profile ID {profile_id}.')
+                
+        if is_suspended == True:
+                message = 'suspended'
+        elif is_suspended == False:
+                message = 'reactivated'
 
-        account_type = profile_name.replace(" ", "")
+        return self.display_success(profile_id, message)
 
-        result = CreateUserProfileC().create_user_profile(profile_name, account_type, description)
-
-        if result is None:
-            return self.display_fail("Profile name already exists")
-        if not result:  # entity returns False when saving fails
-            return self.display_fail()
-
-        return self.display_success(result)
-
-    def display_success(self, user_profile):
+    def display_success(self, profile_id, message):
+                return jsonify({
+                    'success': True,
+                    'message': f'Profile ID {profile_id} successfully {message}'
+                }), 200
+        
+    def display_fail(self, message="Suspend User Profile Failed"):
         return jsonify({
-            "success": True,
-            "profile": {
-                "profile_id": user_profile.profile_id,
-                "name": user_profile.name,
-                "account_type": user_profile.account_type,
-                "description":user_profile.description,
-                "is_suspended": user_profile.is_suspended
-            }
-        }), 201
-
-    def display_fail(self, message="Create User Profile Failed"):
-        return jsonify({
-            "success": False,
-            "message": message
-        }), 400
+                        'success': False,
+                        'message': message
+        }), 200

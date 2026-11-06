@@ -55,6 +55,6 @@ class UpdateUserProfileC:
 # Calls: UserProfile.suspend_user_profile() in models/user_profile.py
  
 class SuspendUserProfileC:
-    def suspend_user_profile(cls, profile_id): 
-        return UserProfile.suspend_user_profile(profile_id)
+    def suspend_user_profile(cls, profile_id, is_suspended): 
+        return UserProfile.suspend_user_profile(profile_id, is_suspended)
 
