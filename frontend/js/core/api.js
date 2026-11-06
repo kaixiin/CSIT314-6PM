@@ -26,13 +26,28 @@ async function fetchProfiles(query) {
     profiles = [];
   }
 }
-async function fetchAccounts() {
+const toAccount = a => ({
+  id: a.account_id,
+  name: a.username,
+  email: a.email,
+  profileId: a.profile_id,
+  status: a.is_suspended ? "Suspended" : "Active"
+});
+
+async function fetchAccounts(query) {
   try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts`, { credentials: 'include' });
-    const data = await res.json();
-    accounts = data.accounts || data || [];
+    const qs = query ? `?q=${encodeURIComponent(query)}` : '';
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/admin/accounts${qs}`, { credentials: 'include' });
+    if (!res.ok) {
+      console.error('Failed to load accounts: HTTP', res.status);
+      accounts = [];
+      return;
+    }
+    const body = await res.json();
+    accounts = (body.accounts || []).map(toAccount);
   } catch (error) {
     console.error('Failed to load accounts:', error);
+    accounts = [];
   }
 }
 async function fetchCompanyProfile(accountId) {

@@ -106,7 +106,7 @@
 
   <section class="view" id="accounts">
     <div class="head"><h1>User Accounts</h1><button class="sm" data-go="newAccount">+ Create New Account</button></div>
-    <div class="search"><input type="search" id="accountSearch" placeholder="Search by name or email..."></div>
+    <div class="search"><input type="search" id="accountSearch" placeholder="Search by username or email..."></div>
     <div class="list" id="accountList"></div>
   </section>
 
@@ -121,7 +121,7 @@
     </div>
     <p class="msg" id="accountDetailMsg">Review and update this account's details, or suspend it to block the user from logging in.</p>
     <form id="accountDetailForm">
-      <label for="adFullname">Full name</label>
+      <label for="adFullname">Username</label>
       <input id="adFullname" type="text" required>
       <label for="adEmail">Email</label>
       <input id="adEmail" type="email" required>
@@ -138,8 +138,8 @@
     <h1>Create User Account</h1>
     <p class="msg" id="accountMsg">Create a login for a new user and assign a profile.</p>
     <form id="accountForm">
-      <label for="aname">Full name</label>
-      <input id="aname" type="text" placeholder="e.g. Jamie Tan" required>
+      <label for="aname">Username</label>
+      <input id="aname" type="text" placeholder="e.g. jamietan" required>
       <label for="aemail">Email</label>
       <input id="aemail" type="email" placeholder="jamie@example.com" required>
       <label for="apw">Temporary password</label>
