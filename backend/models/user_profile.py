@@ -105,3 +105,23 @@ class UserProfile(db.Model):
             db.session.rollback()
             print(f"An unexpected error occurred: {e}")
             return False
+
+    #SUSPEND USER PROFILE - #6 (#128)
+    @classmethod
+    def suspend_user_profile(cls, profile_id): 
+            
+        try:
+            profile = cls.query.get(profile_id)
+
+            if profile is None:
+                return None
+
+            profile.is_suspend = True
+
+            db.session.commit()
+            return True
+    
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error setting suspension status: {e}")
+            return False    
