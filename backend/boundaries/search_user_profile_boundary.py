@@ -11,7 +11,6 @@ from controllers.admin_controller import SearchUserProfileC
 
 class SearchUserProfilePg:
     def search_user_profiles(self, data):
-        print('insearch')
         keyword = data.get("q") if isinstance(data, dict) else None
         
         if not isinstance(keyword, str):
