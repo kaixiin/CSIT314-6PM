@@ -6,7 +6,7 @@
 
 from flask import jsonify, session
 from boundaries.user_admin import require_admin
-from controllers.suspend_user_account_controller import SuspendUserAccountC
+from controllers.admin_controller import SuspendUserAccountC
 
 
 class SuspendUserAccountPg:

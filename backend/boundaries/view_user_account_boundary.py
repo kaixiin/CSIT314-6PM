@@ -6,7 +6,7 @@
 
 from flask import jsonify
 from boundaries.user_admin import require_admin
-from controllers.view_user_account_controller import ViewUserAccountC
+from controllers.admin_controller import ViewUserAccountC
 
 
 class ViewUserAccountPg:

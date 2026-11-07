@@ -7,7 +7,7 @@
 from flask import jsonify
 from boundaries.user_admin import require_admin
 from boundaries.account_input import read_account_fields
-from controllers.update_user_account_controller import UpdateUserAccountC
+from controllers.admin_controller import UpdateUserAccountC
 
 
 class UpdateUserAccountPg:
