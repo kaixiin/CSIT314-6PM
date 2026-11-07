@@ -1,4 +1,4 @@
-# Generates bulk test data for companies, IDPs and favourites. See database/README.md.
+# Generates bulk test data for companies, IDPs, favourites and views. See database/README.md.
 # Run generate_user_data first: every row here belongs to a generated account.
 
 import random
@@ -13,6 +13,7 @@ GEN_EMAIL_DOMAIN = "test123.com"
 HOW_MANY_COMPANIES = 30   # the remaining designers stay without a company
 HOW_MANY_IDPS = 100
 FAVOURITES_PER_CUSTOMER = (3, 6)   # lowest and highest
+VIEWS_PER_IDP = (3, 25)   # on top of one view before every favourite
 PAST_DAYS = 180           # dates are spread over this many days, for the reports
 RANDOM_SEED = 314         # the same data comes out on every run and every machine
 
@@ -30,10 +31,11 @@ def clear_generated(conn):
     """Delete only rows owned by generated accounts, children first."""
     accounts = "SELECT account_id FROM user_account WHERE email LIKE :pattern"
     pattern = {"pattern": f"%@{GEN_EMAIL_DOMAIN}"}
+    views = conn.execute(text(f"DELETE FROM idp_view WHERE account_id IN ({accounts})"), pattern).rowcount
     favourites = conn.execute(text(f"DELETE FROM favourite WHERE account_id IN ({accounts})"), pattern).rowcount
     idps = conn.execute(text(f"DELETE FROM idp WHERE account_id IN ({accounts})"), pattern).rowcount
     companies = conn.execute(text(f"DELETE FROM company_profile WHERE account_id IN ({accounts})"), pattern).rowcount
-    print(f"Removed {companies} companies, {idps} IDPs and {favourites} favourites from the last run")
+    print(f"Removed {companies} companies, {idps} IDPs, {favourites} favourites and {views} views from the last run")
 
 
 def active_accounts(conn, account_type):
@@ -102,6 +104,25 @@ def insert_favourites(conn, rng, customers, now):
     print(f"Inserted {count} favourites")
 
 
+def insert_views(conn, rng, customers, now):
+    pattern = {"pattern": f"%@{GEN_EMAIL_DOMAIN}"}
+    rows = []
+    # A customer opens an IDP before saving it, so every favourite gets an earlier view
+    for account_id, idp_id, saved_at, created_at in conn.execute(text(
+            "SELECT f.account_id, f.idp_id, f.saved_at, i.created_at FROM favourite f "
+            "JOIN idp i ON i.idp_id = f.idp_id JOIN user_account a ON a.account_id = f.account_id "
+            "WHERE a.email LIKE :pattern ORDER BY f.favourite_id"), pattern).all():
+        rows.append({"a": account_id, "i": idp_id, "at": random_date(rng, saved_at, earliest=created_at)})
+    # Extra browsing; a customer may open the same IDP more than once
+    for idp_id, created_at in conn.execute(text(
+            "SELECT i.idp_id, i.created_at FROM idp i JOIN user_account a ON a.account_id = i.account_id "
+            "WHERE a.email LIKE :pattern ORDER BY i.idp_id"), pattern).all():
+        for _ in range(rng.randint(*VIEWS_PER_IDP)):
+            rows.append({"a": rng.choice(customers), "i": idp_id, "at": random_date(rng, now, earliest=created_at)})
+    conn.execute(text("INSERT INTO idp_view (account_id, idp_id, viewed_at) VALUES (:a, :i, :at)"), rows)
+    print(f"Inserted {len(rows)} views")
+
+
 if __name__ == "__main__":
     engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
     with engine.begin() as conn:  # if anything fails, nothing is saved
@@ -116,7 +137,8 @@ if __name__ == "__main__":
             insert_companies(conn, rng, designers)
             insert_idps(conn, rng, designers, now)
             insert_favourites(conn, rng, customers, now)
+            insert_views(conn, rng, customers, now)
 
-        for table in ("company_profile", "idp", "favourite"):
+        for table in ("company_profile", "idp", "favourite", "idp_view"):
             total = conn.execute(text(f"SELECT COUNT(*) FROM {table}")).scalar()
             print(f"  {table}: {total} rows")
