@@ -7,7 +7,7 @@
 # (the "Are you sure?" dialogue is shown by the page, so only a confirmed request reaches here)
 
 from flask import jsonify, session
-from controllers.delete_company_profile_controller import DeleteCompanyProfileC
+from controllers.id_controller import DeleteCompanyProfileC
 
 
 class DeleteCompanyProfilePg:

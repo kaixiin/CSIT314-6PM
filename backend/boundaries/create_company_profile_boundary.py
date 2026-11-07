@@ -7,7 +7,7 @@
 
 from flask import jsonify, session
 from boundaries.company import read_company_form, remove_logo
-from controllers.create_company_profile_controller import CreateCompanyProfileC
+from controllers.id_controller import CreateCompanyProfileC
 
 
 class CreateCompanyProfilePg:

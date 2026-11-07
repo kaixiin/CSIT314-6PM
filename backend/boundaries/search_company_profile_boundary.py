@@ -6,7 +6,7 @@
 #   display_no_results()
 
 from flask import jsonify, session
-from controllers.search_company_profile_controller import SearchCompanyProfileC
+from controllers.id_controller import SearchCompanyProfileC
 
 
 class SearchCompanyProfilePg:

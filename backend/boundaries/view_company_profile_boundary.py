@@ -6,7 +6,7 @@
 #   display_fail(message, status)
 
 from flask import jsonify, session
-from controllers.view_company_profile_controller import ViewCompanyProfileC
+from controllers.id_controller import ViewCompanyProfileC
 
 
 class ViewCompanyProfilePg:
