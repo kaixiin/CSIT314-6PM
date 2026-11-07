@@ -72,3 +72,13 @@ CREATE TABLE favourite (
   FOREIGN KEY(account_id) REFERENCES user_account(account_id),
   FOREIGN KEY(idp_id) REFERENCES idp(idp_id) ON DELETE CASCADE
 );
+
+CREATE TABLE idp_view (
+  view_id INT NOT NULL AUTO_INCREMENT,
+  idp_id INT NOT NULL,
+  account_id INT NOT NULL,
+  viewed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(view_id),
+  FOREIGN KEY(idp_id) REFERENCES idp(idp_id) ON DELETE CASCADE,
+  FOREIGN KEY(account_id) REFERENCES user_account(account_id)
+);

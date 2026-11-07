@@ -24,7 +24,7 @@ def clear_generated(conn):
     pattern = {"pattern": f"%@{GEN_EMAIL_DOMAIN}"}
     generated = "SELECT account_id FROM user_account WHERE email LIKE :pattern"
     # Children first, or the foreign keys block the delete
-    for table in ("favourite", "idp", "company_profile"):
+    for table in ("idp_view", "favourite", "idp", "company_profile"):
         conn.execute(text(f"DELETE FROM {table} WHERE account_id IN ({generated})"), pattern)
     accounts = conn.execute(text("DELETE FROM user_account WHERE email LIKE :pattern"), pattern).rowcount
     print(f"Removed {accounts} previously generated accounts and their test data")
