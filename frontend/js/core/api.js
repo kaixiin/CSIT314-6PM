@@ -50,12 +50,29 @@ async function fetchAccounts(query) {
     accounts = [];
   }
 }
+const toCompany = c => ({
+  id: c.company_id,
+  accountId: c.account_id,
+  name: c.company_name,
+  desc: c.description || "",
+  addr: c.address || "",
+  phone: c.contact_number || "",
+  email: c.email || "",
+  logo: c.logo_url && c.logo_url.startsWith("/") ? API_CONFIG.BASE_URL + c.logo_url : (c.logo_url || "")
+});
+
+// The backend takes the account from the session, so accountId is only the
+// key this company is stored under in companyProfiles.
 async function fetchCompanyProfile(accountId) {
   try {
-    const res = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies/${accountId}`, { credentials: 'include' });
-    if (res.status === 404) { delete companyProfiles[accountId]; return; }
-    const data = await res.json();
-    companyProfiles[accountId] = data.company || data;
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/id/company`, { credentials: 'include' });
+    if (!res.ok) {
+      if (res.status !== 404) console.error('Failed to load company profile: HTTP', res.status);
+      delete companyProfiles[accountId];
+      return;
+    }
+    const body = await res.json();
+    companyProfiles[accountId] = toCompany(body.company);
   } catch (error) {
     console.error('Failed to load company profile:', error);
   }
@@ -64,9 +81,15 @@ async function fetchCompanies(query) {
   try {
     const qs = query ? `?q=${encodeURIComponent(query)}` : '';
     const res = await fetch(`${API_CONFIG.BASE_URL}/api/id/companies${qs}`, { credentials: 'include' });
-    const data = await res.json();
-    otherCompanies = data.companies || data || [];
+    if (!res.ok) {
+      console.error('Failed to load companies: HTTP', res.status);
+      otherCompanies = [];
+      return;
+    }
+    const body = await res.json();
+    otherCompanies = (body.companies || []).map(toCompany);
   } catch (error) {
     console.error('Failed to load companies:', error);
+    otherCompanies = [];
   }
 }

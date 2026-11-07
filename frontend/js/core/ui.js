@@ -86,9 +86,14 @@ function openAccount(id) {
 // create / update / delete form handlers for the ID role (companyCreateForm,
 // companyEditForm, #ccDeleteBtn, #companySearch) are NOT wired here -- that's
 // the Sprint 3 JS to be added separately (js/id/company.js).
+const showLogo = (imgId, url) => {
+  if (url) $(imgId).src = url; else $(imgId).removeAttribute("src");
+  $(imgId).hidden = !url;
+};
 function renderCompanyView() {
   const p = companyProfiles[me.id];
   if (!p) return;
+  showLogo("vLogo", p.logo);
   $("vName").textContent = p.name;
   $("vDesc").textContent = p.desc;
   $("vEmail").textContent = p.email;
@@ -102,19 +107,20 @@ function renderCompanyList(filter) {
   const q = (filter || "").trim().toLowerCase();
   const matches = otherCompanies.filter(c => c.name.toLowerCase().includes(q));
   $("companyList").innerHTML = matches.length
-    ? matches.map((c, i) => `<div class="row" data-open-competitor="${i}">
-        <div class="ico"></div>
+    ? matches.map(c => `<div class="row" data-open-competitor="${otherCompanies.indexOf(c)}">
+        <div class="ico">${c.logo ? `<img src="${esc(c.logo)}" alt="">` : ""}</div>
         <div style="flex:1">
           <div class="nm">${esc(c.name)}</div>
           <div class="sub">${esc(c.desc)}</div>
         </div>
         <div class="chev">&rsaquo;</div>
       </div>`).join("")
-    : `<div class="empty">No companies match "${esc(filter)}".</div>`;
+    : `<div class="empty">${q ? `No companies match "${esc(filter)}".` : "No other companies found."}</div>`;
 }
 function openCompetitor(i) {
   const c = otherCompanies[i];
   if (!c) return;
+  showLogo("xLogo", c.logo);
   $("xName").textContent = c.name;
   $("xDesc").textContent = c.desc;
   show("competitorView");
@@ -127,6 +133,9 @@ function fillCompanyEditForm() {
   $("ecemail").value = p.email;
   $("ecphone").value = p.phone || "";
   $("ecaddr").value = p.addr || "";
+  $("eclogo").value = "";
+  showLogo("eclogoPreview", p.logo);
+  msg("ccEditMsg", "Keep your company profile up to date so customers see accurate information.");
 }
 
 // Shared confirmation modal -- replaces the browser's native confirm()

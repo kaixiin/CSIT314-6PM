@@ -6,6 +6,9 @@ from extensions import db
 from routes.auth_routes import auth_bp  #registered for Login/Logout authentication
 from routes.useradmin_routes import admin_bp  #registered for Admin functions
 from routes.user_account_routes import user_account_bp  #registered for User Account functions
+from routes.id_routes import id_bp
+from routes.company_routes import id_bp          # adds the company routes to id_bp
+from routes.logo_routes import logo_bp
 
 def create_app():
     app = Flask(__name__)
@@ -21,6 +24,8 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(user_account_bp)
+    app.register_blueprint(id_bp)
+    app.register_blueprint(logo_bp)
 
     #db health check route
     @app.route('/')

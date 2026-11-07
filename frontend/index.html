@@ -167,7 +167,8 @@
     <h1>Create Company Profile</h1>
     <p class="msg" id="ccCreateMsg">Tell customers who you are so they can find and contact you.</p>
     <form id="companyCreateForm">
-      <div class="logo-upload">+ Add<br>logo</div>
+      <input class="logo-input" id="clogo" type="file" accept="image/png,image/jpeg" aria-label="Company logo">
+      <label class="logo-upload" for="clogo"><img id="clogoPreview" alt="Logo preview" hidden><span>+ Add<br>logo</span></label>
       <label for="cname">Company name</label>
       <input id="cname" type="text" placeholder="e.g. Studio Lumen" required>
       <label for="cdesc">About the company</label>
@@ -175,9 +176,9 @@
       <label for="cemail">Contact email</label>
       <input id="cemail" type="email" placeholder="studio@example.com" required>
       <label for="cphone">Contact phone</label>
-      <input id="cphone" type="tel" placeholder="+65 9123 4567">
+      <input id="cphone" type="tel" placeholder="+65 9123 4567" required>
       <label for="caddr">Address</label>
-      <input id="caddr" type="text" placeholder="e.g. 12 Design Ave, Singapore">
+      <input id="caddr" type="text" placeholder="e.g. 12 Design Ave, Singapore" required>
       <button class="btn" type="submit">Create Profile</button>
     </form>
   </section>
@@ -191,7 +192,7 @@
     </div>
     <p class="msg">This is what customers see when they find your company.</p>
     <div class="vcard">
-      <div class="vlogo"></div>
+      <div class="vlogo"><img id="vLogo" alt="Company logo" hidden></div>
       <div class="vname" id="vName"></div>
       <div class="vdesc" id="vDesc"></div>
     </div>
@@ -211,9 +212,10 @@
   <section class="view" id="ccEdit">
     <button class="backlink" data-go="ccView">&larr; Back to profile</button>
     <h1>Update Company Profile</h1>
-    <p class="msg">Keep your company profile up to date so customers see accurate information.</p>
+    <p class="msg" id="ccEditMsg">Keep your company profile up to date so customers see accurate information.</p>
     <form id="companyEditForm">
-      <div class="logo-upload">Change<br>logo</div>
+      <input class="logo-input" id="eclogo" type="file" accept="image/png,image/jpeg" aria-label="Company logo">
+      <label class="logo-upload" for="eclogo"><img id="eclogoPreview" alt="Logo preview" hidden><span>Change<br>logo</span></label>
       <label for="ecname">Company name</label>
       <input id="ecname" type="text" required>
       <label for="ecdesc">About the company</label>
@@ -221,9 +223,9 @@
       <label for="ecemail">Contact email</label>
       <input id="ecemail" type="email" required>
       <label for="ecphone">Contact phone</label>
-      <input id="ecphone" type="tel">
+      <input id="ecphone" type="tel" required>
       <label for="ecaddr">Address</label>
-      <input id="ecaddr" type="text">
+      <input id="ecaddr" type="text" required>
       <div class="row2">
         <button class="btn" type="submit">Save Changes</button>
         <button class="btn ghost" type="button" data-go="ccView">Cancel</button>
@@ -242,7 +244,7 @@
   <section class="view" id="competitorView">
     <button class="backlink" data-go="browseCompanies">&larr; Back to browse companies</button>
     <div class="vcard">
-      <div class="vlogo"></div>
+      <div class="vlogo"><img id="xLogo" alt="Company logo" hidden></div>
       <div class="vname" id="xName"></div>
       <div class="vdesc" id="xDesc"></div>
     </div>
@@ -281,7 +283,7 @@
 <script src="js/id/company.js"></script>
 
 <script>
-  show("login");
+  restoreSession();
 </script>
 </body>
 </html>
