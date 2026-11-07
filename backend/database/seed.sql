@@ -14,3 +14,15 @@ INSERT INTO user_account (profile_id, username, password, email) VALUES
 
 INSERT INTO company_profile (account_id, company_name, description, address, contact_number, email) VALUES
 (2, 'Test Design Studio', 'Test interior design company', '10 Orchard Road, Singapore', '61234567', 'hello@test.com');
+
+INSERT INTO idp_category (name, description, is_suspended) VALUES
+('Residential', 'Homes such as HDB flats, condominiums and landed houses.', FALSE),
+('Commercial', 'General business premises and shared workspaces.', FALSE),
+('Office', 'Workplaces, meeting rooms and reception areas.', FALSE),
+('Retail', 'Shops, showrooms and pop-up stores.', FALSE),
+('Food and Beverage', 'Restaurants, cafes and bars.', FALSE),
+('Hospitality', 'Hotels, serviced apartments and guest spaces.', FALSE),
+('Healthcare', 'Clinics, dental practices and wellness centres.', FALSE),
+('Education', 'Classrooms, libraries and enrichment centres.', FALSE),
+('Renovation', 'Refreshing or remodelling an existing space.', FALSE),
+('Suspended Test Category', 'Suspended on purpose, for testing suspended categories.', TRUE);

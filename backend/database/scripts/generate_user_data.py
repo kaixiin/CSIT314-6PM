@@ -20,10 +20,14 @@ SUSPENDED_EVERY = 12  # every 12th generated account is suspended
 
 
 def clear_generated(conn):
-    """Delete only accounts this script created."""
-    accounts = conn.execute(text("DELETE FROM user_account WHERE email LIKE :pattern"),
-                            {"pattern": f"%@{GEN_EMAIL_DOMAIN}"}).rowcount
-    print(f"Removed {accounts} previously generated accounts")
+    """Delete only accounts this script created, and anything that points to them."""
+    pattern = {"pattern": f"%@{GEN_EMAIL_DOMAIN}"}
+    generated = "SELECT account_id FROM user_account WHERE email LIKE :pattern"
+    # Children first, or the foreign keys block the delete
+    for table in ("favourite", "idp", "company_profile"):
+        conn.execute(text(f"DELETE FROM {table} WHERE account_id IN ({generated})"), pattern)
+    accounts = conn.execute(text("DELETE FROM user_account WHERE email LIKE :pattern"), pattern).rowcount
+    print(f"Removed {accounts} previously generated accounts and their test data")
 
 
 def insert_accounts(conn):

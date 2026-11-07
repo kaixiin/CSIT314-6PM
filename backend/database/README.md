@@ -5,6 +5,7 @@
 | `schema.sql` | Creates the database and all tables |
 | `seed.sql` | Fixed test data used in our test cases (the logins below) |
 | `scripts/generate_user_data.py` | Bulk test data: 100 extra user accounts |
+| `scripts/generate_idp_data.py` | Bulk test data: 30 companies, 100 IDPs and favourites |
 
 ## 1. Create the database
 
@@ -44,11 +45,32 @@ This adds 100 accounts spread over the 4 seed profiles (all with password `passw
 
 Every 12th account is suspended (8 in total), for testing suspended logins.
 
+### Companies, IDPs and favourites
+
+Run this after `generate_user_data`, because every row belongs to a generated account:
+
+```
+python -m database.scripts.generate_idp_data
+```
+
+| Table | Rows | Details |
+|---|---|---|
+| `company_profile` | 30 | One each for the first 30 active designers; the other designers have no company, for testing that screen |
+| `idp` | 100 | Shared across those 30 designers, about 70% `Past` and 30% `Current`, in active categories only |
+| `favourite` | About 200 | 3 to 6 per active customer |
+
+- IDP `created_at` and favourite `saved_at` are spread over the last 180 days, for the reports. A favourite is never dated before its IDP.
+- The same data comes out on every run. Only the dates move, because they count back from today.
+- **Safe to re-run:** it removes its own rows first, and seed data is never touched.
+- To remove these rows only: `python -m database.scripts.generate_idp_data --clear`
+- Running `generate_user_data` again deletes this data too, because it recreates the accounts. Run this script again afterwards.
+- `idp.image` and `company_profile.logo` are left empty, since uploaded files are stored per computer.
+
 - **Safe to re-run:** it removes the accounts it made last time before inserting them again.
 - **Never touches the seed data:** generated accounts all have emails ending in `@test123.com`. Don't change this domain in the script, and never set it to `test.com` (the seed accounts' domain), or the clean-up step will delete the wrong accounts.
 - if anything fails, no changes are saved.
 
-To remove the generated accounts only:
+To remove the generated accounts and all test data linked to them:
 
 ```
 python -m database.scripts.generate_user_data --clear
@@ -61,3 +83,6 @@ python -m database.scripts.generate_user_data --clear
 | `No module named 'config'` | You ran it from the wrong folder or without `-m`. `cd backend` and use `python -m database.scripts.generate_user_data` |
 | `No module named 'sqlalchemy'` | The venv isn't active. Activate it first |
 | `Missing base profiles` | Run `seed.sql` first |
+| `Table ... doesn't exist` | Your database is older than `schema.sql`. Run the missing `CREATE TABLE` blocks and their `INSERT` statements |
+| `No active IDP categories` | Run the `idp_category` `INSERT` from `seed.sql` first |
+| `Not enough generated accounts` | Run `generate_user_data` first |

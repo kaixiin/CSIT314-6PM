@@ -38,3 +38,37 @@ CREATE TABLE company_profile (
   FOREIGN KEY(account_id) REFERENCES user_account(account_id)
 );
 
+CREATE TABLE idp_category (
+  category_id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL UNIQUE,
+  description VARCHAR(255) NOT NULL,
+  is_suspended BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY(category_id)
+);
+
+CREATE TABLE idp (
+  idp_id INT NOT NULL AUTO_INCREMENT,
+  account_id INT NOT NULL,
+  category_id INT NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  description TEXT NOT NULL,
+  location VARCHAR(255) NOT NULL,
+  budget DECIMAL(12,2) NOT NULL,
+  status ENUM('Current', 'Past') NOT NULL DEFAULT 'Current',
+  image VARCHAR(255),
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(idp_id),
+  FOREIGN KEY(account_id) REFERENCES user_account(account_id),
+  FOREIGN KEY(category_id) REFERENCES idp_category(category_id)
+);
+
+CREATE TABLE favourite (
+  favourite_id INT NOT NULL AUTO_INCREMENT,
+  account_id INT NOT NULL,
+  idp_id INT NOT NULL,
+  saved_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(favourite_id),
+  UNIQUE (account_id, idp_id),
+  FOREIGN KEY(account_id) REFERENCES user_account(account_id),
+  FOREIGN KEY(idp_id) REFERENCES idp(idp_id) ON DELETE CASCADE
+);
