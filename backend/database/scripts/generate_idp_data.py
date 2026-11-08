@@ -1,4 +1,5 @@
-# Generates bulk test data for companies, IDPs, favourites and views. See database/README.md.
+# Generates bulk test data for categories, profiles, companies, IDPs, favourites and views.
+# See database/README.md.
 # Run generate_user_data first: every row here belongs to a generated account.
 
 import random
@@ -10,21 +11,30 @@ from sqlalchemy import create_engine, text
 from config import Config
 
 GEN_EMAIL_DOMAIN = "test123.com"
-HOW_MANY_COMPANIES = 30   # the remaining designers stay without a company
+HOW_MANY_COMPANIES = 100  # the remaining designers stay without a company
 HOW_MANY_IDPS = 100
+DESIGNERS_WITH_IDPS = 50  # so each of these designers has more than one IDP to search
+EXTRA_PROFILES = 96       # 100 with the 4 from seed.sql
+GEN_CATEGORY_NOTE = "Generated test category"
+GEN_PROFILE_TYPE = "GeneratedType"
+SUSPENDED_CATEGORY_EVERY = 15
+SUSPENDED_PROFILE_EVERY = 12
 FAVOURITES_PER_CUSTOMER = (3, 6)   # lowest and highest
 VIEWS_PER_IDP = (3, 25)   # on top of one view before every favourite
 PAST_DAYS = 180           # dates are spread over this many days, for the reports
 RANDOM_SEED = 314         # the same data comes out on every run and every machine
 
 COMPANY_FIRST = ["Studio", "Atelier", "Maison", "Casa", "House of", "Nook", "Oak", "Haven", "Form", "Linea"]
-COMPANY_SECOND = ["Lumen", "Terra", "Verde", "Nova", "Ember", "Solace", "Aster"]
+COMPANY_SECOND = ["Lumen", "Terra", "Verde", "Nova", "Ember", "Solace", "Aster",
+                  "Meridian", "Willow", "Harbour", "Cedar", "Slate"]
 PLACES = ["Tampines", "Bishan", "Orchard", "Tiong Bahru", "Punggol", "Jurong East",
           "Toa Payoh", "Bukit Timah", "Marine Parade", "Serangoon", "Holland Village", "Clementi"]
 STYLES = ["Scandinavian", "Japandi", "Industrial", "Minimalist", "Mid-Century",
           "Contemporary", "Tropical", "Coastal", "Classic", "Rustic"]
 SPACES = ["Living Room", "Kitchen", "Master Bedroom", "Study", "Lobby",
           "Dining Area", "Reception", "Studio Apartment", "Bathroom", "Lounge"]
+CATEGORY_KINDS = ["Residential", "Commercial", "Office", "Retail", "Food and Beverage",
+                  "Hospitality", "Healthcare", "Education", "Renovation"]
 
 
 def clear_generated(conn):
@@ -35,7 +45,37 @@ def clear_generated(conn):
     favourites = conn.execute(text(f"DELETE FROM favourite WHERE account_id IN ({accounts})"), pattern).rowcount
     idps = conn.execute(text(f"DELETE FROM idp WHERE account_id IN ({accounts})"), pattern).rowcount
     companies = conn.execute(text(f"DELETE FROM company_profile WHERE account_id IN ({accounts})"), pattern).rowcount
-    print(f"Removed {companies} companies, {idps} IDPs, {favourites} favourites and {views} views from the last run")
+    # Kept if something real now uses them; the INSERT IGNOREs below then skip those rows
+    categories = conn.execute(text(
+        "DELETE FROM idp_category WHERE description LIKE :note "
+        "AND category_id NOT IN (SELECT category_id FROM idp)"),
+        {"note": f"{GEN_CATEGORY_NOTE}%"}).rowcount
+    profiles = conn.execute(text(
+        "DELETE FROM user_profile WHERE account_type LIKE :t "
+        "AND profile_id NOT IN (SELECT profile_id FROM user_account)"),
+        {"t": f"{GEN_PROFILE_TYPE}%"}).rowcount
+    print(f"Removed {companies} companies, {idps} IDPs, {favourites} favourites, {views} views, "
+          f"{categories} categories and {profiles} profiles from the last run")
+
+
+def insert_categories(conn):
+    names = [f"{style} {kind}" for style in STYLES for kind in CATEGORY_KINDS]
+    for n, name in enumerate(names, 1):
+        conn.execute(text(
+            "INSERT IGNORE INTO idp_category (name, description, is_suspended) VALUES (:n, :d, :s)"),
+            {"n": name, "d": f"{GEN_CATEGORY_NOTE}: {name.lower()} projects.",
+             "s": n % SUSPENDED_CATEGORY_EVERY == 0})
+    print(f"Inserted {len(names)} categories")
+
+
+def insert_profiles(conn):
+    for n in range(1, EXTRA_PROFILES + 1):
+        conn.execute(text(
+            "INSERT IGNORE INTO user_profile (name, account_type, description, is_suspended) "
+            "VALUES (:n, :t, :d, :s)"),
+            {"n": f"Generated Profile {n:03d}", "t": f"{GEN_PROFILE_TYPE}{n:03d}",
+             "d": "Generated test profile with no accounts.", "s": n % SUSPENDED_PROFILE_EVERY == 0})
+    print(f"Inserted {EXTRA_PROFILES} profiles")
 
 
 def active_accounts(conn, account_type):
@@ -80,7 +120,7 @@ def insert_idps(conn, rng, designers, now):
         conn.execute(text(
             "INSERT INTO idp (account_id, category_id, title, description, location, budget, status, created_at) "
             "VALUES (:a, :c, :t, :d, :l, :b, :s, :at)"),
-            {"a": designers[n % len(designers)], "c": rng.choice(categories),
+            {"a": designers[n % DESIGNERS_WITH_IDPS], "c": rng.choice(categories),
              "t": f"{style} {space} in {place}",
              "d": f"A {style.lower()} {space.lower()} designed around natural light and everyday use.",
              "l": f"{place}, Singapore", "b": rng.randrange(5000, 120001, 500),
@@ -134,11 +174,13 @@ if __name__ == "__main__":
             customers = active_accounts(conn, "Customer")
             if len(designers) < HOW_MANY_COMPANIES or not customers:
                 sys.exit("Not enough generated accounts: run generate_user_data first.")
+            insert_categories(conn)
+            insert_profiles(conn)
             insert_companies(conn, rng, designers)
             insert_idps(conn, rng, designers, now)
             insert_favourites(conn, rng, customers, now)
             insert_views(conn, rng, customers, now)
 
-        for table in ("company_profile", "idp", "favourite", "idp_view"):
+        for table in ("idp_category", "user_profile", "company_profile", "idp", "favourite", "idp_view"):
             total = conn.execute(text(f"SELECT COUNT(*) FROM {table}")).scalar()
             print(f"  {table}: {total} rows")

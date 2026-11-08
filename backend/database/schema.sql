@@ -55,7 +55,7 @@ CREATE TABLE idp (
   location VARCHAR(255) NOT NULL,
   budget DECIMAL(12,2) NOT NULL,
   status ENUM('Current', 'Past') NOT NULL DEFAULT 'Current',
-  image VARCHAR(255),
+  images JSON,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(idp_id),
   FOREIGN KEY(account_id) REFERENCES user_account(account_id),
