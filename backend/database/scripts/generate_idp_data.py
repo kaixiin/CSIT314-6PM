@@ -1,4 +1,4 @@
-# Generates bulk test data for categories, profiles, companies, IDPs, favourites and views.
+# Generates bulk test data for categories, companies, IDPs, favourites and views.
 # See database/README.md.
 # Run generate_user_data first: every row here belongs to a generated account.
 
@@ -14,11 +14,9 @@ GEN_EMAIL_DOMAIN = "test123.com"
 HOW_MANY_COMPANIES = 100  # the remaining designers stay without a company
 HOW_MANY_IDPS = 100
 DESIGNERS_WITH_IDPS = 50  # so each of these designers has more than one IDP to search
-EXTRA_PROFILES = 96       # 100 with the 4 from seed.sql
 GEN_CATEGORY_NOTE = "Generated test category"
-GEN_PROFILE_TYPE = "GeneratedType"
+GEN_PROFILE_TYPE = "GeneratedType"   # older runs made these; user_profile should only hold the 4 seed roles
 SUSPENDED_CATEGORY_EVERY = 15
-SUSPENDED_PROFILE_EVERY = 12
 FAVOURITES_PER_CUSTOMER = (3, 6)   # lowest and highest
 VIEWS_PER_IDP = (3, 25)   # on top of one view before every favourite
 PAST_DAYS = 180           # dates are spread over this many days, for the reports
@@ -50,6 +48,7 @@ def clear_generated(conn):
         "DELETE FROM idp_category WHERE description LIKE :note "
         "AND category_id NOT IN (SELECT category_id FROM idp)"),
         {"note": f"{GEN_CATEGORY_NOTE}%"}).rowcount
+    # Removes leftovers from older runs of this script
     profiles = conn.execute(text(
         "DELETE FROM user_profile WHERE account_type LIKE :t "
         "AND profile_id NOT IN (SELECT profile_id FROM user_account)"),
@@ -66,16 +65,6 @@ def insert_categories(conn):
             {"n": name, "d": f"{GEN_CATEGORY_NOTE}: {name.lower()} projects.",
              "s": n % SUSPENDED_CATEGORY_EVERY == 0})
     print(f"Inserted {len(names)} categories")
-
-
-def insert_profiles(conn):
-    for n in range(1, EXTRA_PROFILES + 1):
-        conn.execute(text(
-            "INSERT IGNORE INTO user_profile (name, account_type, description, is_suspended) "
-            "VALUES (:n, :t, :d, :s)"),
-            {"n": f"Generated Profile {n:03d}", "t": f"{GEN_PROFILE_TYPE}{n:03d}",
-             "d": "Generated test profile with no accounts.", "s": n % SUSPENDED_PROFILE_EVERY == 0})
-    print(f"Inserted {EXTRA_PROFILES} profiles")
 
 
 def active_accounts(conn, account_type):
@@ -175,7 +164,6 @@ if __name__ == "__main__":
             if len(designers) < HOW_MANY_COMPANIES or not customers:
                 sys.exit("Not enough generated accounts: run generate_user_data first.")
             insert_categories(conn)
-            insert_profiles(conn)
             insert_companies(conn, rng, designers)
             insert_idps(conn, rng, designers, now)
             insert_favourites(conn, rng, customers, now)

@@ -5,7 +5,7 @@
 | `schema.sql` | Creates the database and all tables |
 | `seed.sql` | Fixed test data used in our test cases (the logins below) |
 | `scripts/generate_user_data.py` | Bulk test data: 180 extra user accounts |
-| `scripts/generate_idp_data.py` | Bulk test data: 100 companies, 100 IDPs, categories, profiles, favourites and views |
+| `scripts/generate_idp_data.py` | Bulk test data: 100 companies, 100 IDPs, categories, favourites and views |
 
 ## 1. Create the database
 
@@ -49,7 +49,7 @@ Every 12th account is suspended (15 in total), for testing suspended logins.
 - **Never touches the seed data:** generated accounts all have emails ending in `@test123.com`. Don't change this domain in the script, and never set it to `test.com` (the seed accounts' domain), or the clean-up step will delete the wrong accounts.
 - if anything fails, no changes are saved.
 
-### Categories, profiles, companies, IDPs, favourites and views
+### Categories, companies, IDPs, favourites and views
 
 Run this after `generate_user_data`, because every row belongs to a generated account:
 
@@ -60,7 +60,6 @@ python -m database.scripts.generate_idp_data
 | Table | Rows | Details |
 |---|---|---|
 | `idp_category` | 90 more (100 with the seed) | Style and project type combinations; every 15th is suspended |
-| `user_profile` | 96 more (100 with the seed) | Generated Profile 001 to 096, with no accounts; every 12th is suspended |
 | `company_profile` | 100 | One each for the first 100 active designers; the other designers have no company, for testing that screen |
 | `idp` | 100 | Two each for the first 50 of those designers, about 70% `Past` and 30% `Current`, in active categories only |
 | `favourite` | About 200 | 3 to 6 per active customer |
@@ -69,9 +68,10 @@ python -m database.scripts.generate_idp_data
 - IDP `created_at`, favourite `saved_at` and `viewed_at` are spread over the last 180 days, for the reports. Nothing is dated before its IDP, and every favourite has a view before it.
 - The same data comes out on every run. Only the dates move, because they count back from today.
 - **Safe to re-run:** it removes its own rows first, and seed data is never touched.
-- To remove these rows only: `python -m database.scripts.generate_idp_data --clear`. A generated category or profile that something real now uses is kept.
+- To remove these rows only: `python -m database.scripts.generate_idp_data --clear`. A generated category that something real now uses is kept.
 - To get back to the seed data, run that first, then `generate_user_data --clear`.
 - Running `generate_user_data` again deletes this data too, because it recreates the accounts. Run this script again afterwards.
+- `user_profile` stays at the 4 roles from `seed.sql`. Every other table has about 100 records or more.
 - `idp.images` and `company_profile.logo` are left empty, since uploaded files are stored per computer.
 
 To remove the generated accounts and all test data linked to them:
