@@ -12,7 +12,7 @@ PASSWORD = "password123"
 # How many accounts to create for each existing role (account_type from seed.sql)
 ACCOUNTS_PER_ROLE = {
     "UserAdmin": ("admin", 5),
-    "InteriorDesigner": ("designer", 40),
+    "InteriorDesigner": ("designer", 120),  # enough active designers for 100 companies
     "Customer": ("customer", 50),
     "PlatformManager": ("manager", 5),
 }
