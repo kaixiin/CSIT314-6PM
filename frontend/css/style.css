@@ -696,3 +696,367 @@ button:focus-visible,
   font-size: 15px;
   margin-bottom: 24px;
 }
+
+/* ============================================================
+   IDP, Customer and Platform Manager pages
+   ============================================================ */
+body.pm main {
+  max-width: 760px;
+}
+
+input[type=number] {
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 17px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  margin-bottom: 22px;
+}
+
+.btn.primary {
+  background: #222;
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: #000;
+}
+
+.found {
+  color: #777;
+  font-size: 15px;
+  margin: 0 0 14px;
+}
+
+.hint {
+  color: #777;
+  font-size: 13px;
+  margin: 0 0 22px;
+}
+
+input.with-hint {
+  margin-bottom: 8px;
+}
+
+.badge.current {
+  background: #dce8fb;
+  color: #1d4ed8;
+}
+
+.badge.past {
+  background: #fdecea;
+  color: #b3261e;
+}
+
+/* Project cards (ID lists, Browse IDPs, My Shortlist) */
+.pcards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.pcard-img {
+  display: block;
+  height: 150px;
+  background: #d9d9d9;
+  border-radius: 8px 8px 0 0;
+}
+
+.pcard-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.pcard-body {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  padding: 14px;
+}
+
+.pcard-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.pcard-desc {
+  color: #777;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.pcard-links {
+  display: flex;
+  gap: 16px;
+  padding: 10px 2px 0;
+}
+
+.textlink {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  color: #1d4ed8;
+  cursor: pointer;
+}
+
+.textlink.red {
+  color: #b3261e;
+}
+
+.remove-btn {
+  width: 100%;
+  margin-top: 12px;
+  color: #b3261e;
+  border-color: #ccc;
+  background: #fff;
+}
+
+/* Project photos on the create and update forms */
+.photos {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.photo {
+  width: 64px;
+  height: 64px;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.photo.filled {
+  background: #d9d9d9;
+  border-color: #d9d9d9;
+}
+
+.photo.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.status-seg {
+  max-width: 220px;
+}
+
+.status-seg span {
+  padding: 10px 8px;
+  font-size: 14px;
+}
+
+/* Search box with a category dropdown beside it */
+.filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.filters .search,
+.filters select {
+  margin-bottom: 0;
+}
+
+/* Customer project page */
+.gallery-main {
+  height: 300px;
+  background: #d9d9d9;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.gallery-thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.thumb {
+  height: 56px;
+  background: #d9d9d9;
+  border-radius: 6px;
+}
+
+.thumb.on {
+  outline: 2px solid #222;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.facts div {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.facts span {
+  display: block;
+  color: #777;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.sub-title {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+.sub-title.spaced {
+  margin: 36px 0 12px;
+}
+
+.contact {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  font-size: 13px;
+  color: #777;
+}
+
+.contact b {
+  color: #222;
+  font-size: 15px;
+}
+
+/* Data tables (categories, assigned IDPs, top projects) */
+.table-wrap {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.dtable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.dtable th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  border-bottom: 1px solid #ddd;
+}
+
+.dtable td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.dtable tr:last-child td {
+  border-bottom: 0;
+}
+
+.dtable tbody tr[data-go] {
+  cursor: pointer;
+}
+
+.dtable tbody tr[data-go]:hover {
+  background: #f7f7f7;
+}
+
+.sm.red-outline {
+  background: #fff;
+  color: #b3261e;
+  border-color: #b3261e;
+}
+
+.sm.dark {
+  background: #222;
+  color: #fff;
+}
+
+/* Reports */
+.period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.period .sm {
+  min-width: 96px;
+  background: #fff;
+}
+
+.period .sm.act {
+  background: #222;
+  color: #fff;
+  border-color: #222;
+  box-shadow: none;
+}
+
+.period .sm.generate {
+  background: #f0f0f0;
+}
+
+.report-empty {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.report-title {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.report-covers {
+  color: #444;
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+
+.report-cards {
+  margin-bottom: 32px;
+}
+
+.change {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.change.up {
+  color: #2f7d4a;
+}
+
+.change.down {
+  color: #b3261e;
+}
+
+@media (max-width: 520px) {
+  .pcards,
+  .filters,
+  .facts {
+    grid-template-columns: 1fr;
+  }
+}
