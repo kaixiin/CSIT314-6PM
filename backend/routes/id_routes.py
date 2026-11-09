@@ -3,6 +3,8 @@
 
 from flask import Blueprint, request
 from boundaries.interior_designer import require_interior_designer
+from boundaries.create_idp_boundary import CreateIDPPg
+
 
 id_bp = Blueprint("interior_designer", __name__, url_prefix="/api/id")
 
@@ -11,3 +13,7 @@ def check_interior_designer():
     if request.method == "OPTIONS":      # browser preflight carries no cookie
         return None
     return require_interior_designer()
+
+@id_bp.route("/idps", methods=["POST"])
+def create_idp():
+    return CreateIDPPg().create_idp(request.get_json(silent=True))

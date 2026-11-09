@@ -185,7 +185,7 @@ def read_idp_form(data):
         return None, error
     
     # Add images to fields (empty list if no images)
-    fields["images"] = json.dumps(images) if images else None
+    fields["image"] = json.dumps(images) if images else None
     
     return fields, None
 

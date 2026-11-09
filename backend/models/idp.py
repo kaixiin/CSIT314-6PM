@@ -1,5 +1,7 @@
+
 from extensions import db
 from datetime import datetime
+from models.idp_category import IDPCategory
 
 class IDP(db.Model):
     __tablename__ = "idp"
@@ -12,7 +14,7 @@ class IDP(db.Model):
     location = db.Column(db.String(255), nullable=False)
     budget = db.Column(db.Numeric(12, 2), nullable=False)
     status = db.Column(db.Enum('Current', 'Past'), nullable=False, default='Current')
-    images = db.Column(db.JSON)
+    image = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
     def to_dict(self):
@@ -46,6 +48,22 @@ class IDP(db.Model):
             "location": self.location,
             "budget": float(self.budget) if self.budget else 0.0,
             "status": self.status,
-            "images": images_list,
+            "image": images_list,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
+
+    @classmethod
+    def create_idp(cls, account_id, category_id, title, description,
+                            location, budget, status, images=None):
+        new_idp = cls(account_id=account_id, category_id=category_id, title=title,
+                            description=description, location=location,
+                            budget=budget, status=status, image=images)
+        try:
+            db.session.add(new_idp)
+            db.session.commit()
+            return new_idp
+        
+        except Exception as e:
+            db.session.rollback()
+            print(f"Create IDP failed: {e}")
+        return False

@@ -1,4 +1,5 @@
 from models.company_profile import CompanyProfile
+from models.idp import IDP
 
 # COMPANY PROFILE
 # -----------------------------------------
@@ -58,9 +59,17 @@ class DeleteCompanyProfileC:
 # Methods:
 #   search_company_profile(company_name:str): List[CompanyProfile]
 
-from models.company_profile import CompanyProfile
-
-
 class SearchCompanyProfileC:
     def search_company_profile(self, company_name, exclude_account_id=None):
         return CompanyProfile.search_company_profile(company_name, exclude_account_id)
+
+# IDP
+# -----------------------------------------
+# CREATE IDP (PAST + PRESENT) - #20, 25
+# Controller: CreateIDPC
+# Methods:
+#   create_idp(account_id, category_id, title, description, location, budget, status, images) : IDP
+
+class CreateIDPC:
+    def create_idp(self, account_id, category_id, title, description, location, budget, status, images=None):
+        return IDP.create_idp(account_id, category_id, title, description, location, budget, status, images)
