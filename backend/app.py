@@ -9,6 +9,8 @@ from routes.user_account_routes import user_account_bp  #registered for User Acc
 from routes.id_routes import id_bp
 from routes.company_routes import id_bp          # adds the company routes to id_bp
 from routes.logo_routes import logo_bp
+from routes.pm_routes import pm_bp
+import routes.idp_category_routes     
 
 def create_app():
     app = Flask(__name__)
@@ -26,6 +28,7 @@ def create_app():
     app.register_blueprint(user_account_bp)
     app.register_blueprint(id_bp)
     app.register_blueprint(logo_bp)
+    app.register_blueprint(pm_bp)
 
     #db health check route
     @app.route('/')
