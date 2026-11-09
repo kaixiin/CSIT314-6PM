@@ -1053,6 +1053,45 @@ input.with-hint {
   color: #b3261e;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.dtable tbody tr.clickable:hover {
+  background: #f7f7f7;
+}
+
+.pcards .empty {
+  grid-column: 1 / -1;
+}
+
+.pcard-img,
+.photo,
+.gallery-main,
+.thumb {
+  overflow: hidden;
+}
+
+.pcard-img img,
+.photo img,
+.gallery-main img,
+.thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-tiles {
+  display: contents;
+}
+
+button.thumb {
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
 @media (max-width: 520px) {
   .pcards,
   .filters,

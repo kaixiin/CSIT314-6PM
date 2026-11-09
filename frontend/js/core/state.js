@@ -15,10 +15,24 @@ let profiles = [];
 let companyProfiles = {};
 // Other IDs' company profiles, for #19 Search Company Profile (competitor research).
 let otherCompanies = [];
+// IDPs: the designer's own, split by status (ID role)
+let myIdps = { Current: [], Past: [] };
+let idpCategories = [];
+// Customer role
+let browseIdpList = [];
+let customerCategories = [];
+let favourites = [];
+// Platform Manager role
+let pmCategories = [];
+// Which lists failed to load, so a failure isn't shown as "nothing found"
+let loadError = {};
 
 const PARENT = {create:"profiles", newAccount:"accounts", profileDetail:"profiles", accountDetail:"accounts",
-                ccCreate:"ccView", ccEdit:"ccView", ccNoProfile:"ccView", competitorView:"browseCompanies"};
+                ccCreate:"ccView", ccEdit:"ccView", ccNoProfile:"ccView", competitorView:"browseCompanies",
+                idpCreate:"currentIdps", idpDetail:"currentIdps", idpView:"browseIdps",
+                categoryCreate:"categories", categoryDetail:"categories"};
 let me = null, openProfileId = null, openAccountId = null;
+let openIdp = null, idpCreateStatus = "Current", openCustomerIdp = null, openCategory = null;
 
 const $ = id => document.getElementById(id);
 

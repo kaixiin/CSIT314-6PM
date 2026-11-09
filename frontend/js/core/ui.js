@@ -7,14 +7,34 @@ const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",
 const msg = (id, text, err) => { $(id).textContent = text; $(id).className = "msg" + (err ? " err" : ""); };
 const flash = t => { $("ok").textContent = t; $("ok").className = "on"; setTimeout(() => $("ok").className = "", 2500); };
 const badge = s => `<span class="badge ${s === "Suspended" ? "suspended" : "active"}">${s}</span>`;
+const fmtMoney = n => "$" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// Searches on the backend shortly after typing stops. The result is only shown
+// if the box still holds what was searched for, so a slow reply can't overwrite a newer one.
+function wireSearch(inputId, load, render) {
+  let timer;
+  $(inputId).addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+      const query = $(inputId).value;
+      await load(query);
+      if ($(inputId).value === query) render();
+    }, 250);
+  });
+}
 
 const adminViews = ["dash","profiles","profileDetail","create","accounts","accountDetail","newAccount"];
-const idViews = ["ccNoProfile","ccCreate","ccView","ccEdit","browseCompanies","competitorView"];
+const idViews = ["ccNoProfile","ccCreate","ccView","ccEdit","browseCompanies","competitorView","currentIdps","pastIdps","idpCreate","idpDetail"];
+const customerViews = ["browseIdps","idpView","shortlist"];
+const pmViews = ["categories","categoryCreate","categoryDetail","reports"];
 const defaultIdView = () => companyProfiles[me.id] ? "ccView" : "ccNoProfile";
 
 const NAV = {
   admin: [["dash","Dashboard"],["profiles","Profiles"],["accounts","Accounts"]],
-  id: [["ccView","My Company"],["browseCompanies","Browse Companies"]]
+  id: [["currentIdps","Current IDPs"],["pastIdps","Past IDPs"],["ccView","My Company"],["browseCompanies","Browse Companies"]],
+  customer: [["shortlist","My Shortlist"],["browseIdps","Browse IDPs"]],
+  pm: [["categories","Categories"],["reports","Reports"]]
 };
 
 function profileRow(p) {
@@ -99,9 +119,6 @@ function renderCompanyView() {
   $("vEmail").textContent = p.email;
   $("vPhone").textContent = p.phone || "Not provided";
   $("vAddr").textContent = p.addr || "Not provided";
-  $("vPortfolio").innerHTML = p.portfolio && p.portfolio.length
-    ? p.portfolio.map(() => `<div class="pitem"></div>`).join("")
-    : `<div class="pempty" style="grid-column:1/-1">No portfolio projects added yet.</div>`;
 }
 function renderCompanyList(filter) {
   const q = (filter || "").trim().toLowerCase();
@@ -178,12 +195,14 @@ function show(id) {
     if (id === "login" || !idViews.includes(id)) id = defaultIdView();
     else if (id === "ccView" && !companyProfiles[me.id]) id = "ccNoProfile";
   }
-  else { id = "home"; } // customer: no dedicated screens yet in this prototype
+  else if (r === "customer") { if (!customerViews.includes(id)) id = "browseIdps"; }
+  else if (r === "pm") { if (!pmViews.includes(id)) id = "categories"; }
+  else { id = "home"; } // an account type with no screens of its own
 
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
   document.body.className = r || "";
   $("status").textContent = me
-    ? "Logged in as " + (r === "admin" ? "System Admin" : r === "id" ? "ID" : r === "customer" ? "Customer" : "User") + (me.name ? " — " + me.name : "")
+    ? "Logged in as " + (r === "admin" ? "System Admin" : r === "id" ? "ID" : r === "customer" ? "Customer" : r === "pm" ? "PM" : "User") + (me.name ? " — " + me.name : "")
     : "Logged out";
   $("logout").hidden = !me;
 
@@ -202,6 +221,12 @@ function show(id) {
     if (id === "ccView") renderCompanyView();
     if (id === "ccEdit") fillCompanyEditForm();
     if (id === "browseCompanies") renderCompanyList($("companySearch").value);
+    if (id === "currentIdps" || id === "pastIdps") renderMyIdps(id);
+  } else if (r === "customer") {
+    if (id === "browseIdps") renderBrowseIdps();
+    if (id === "shortlist") renderShortlist();
+  } else if (r === "pm") {
+    if (id === "categories") renderCategories();
   } else {
     $("welcome").textContent = "Welcome, " + me.name;
   }
@@ -228,6 +253,15 @@ document.addEventListener("click", async e => {
   if (go === "accounts") { await fetchProfiles(); await fetchAccounts(); }
   if (go === "browseCompanies") await fetchCompanies();
   if (go === "ccView" && me) await fetchCompanyProfile(me.id);
+  if (go === "currentIdps") await fetchMyIdps("Current", $("currentIdpSearch").value);
+  if (go === "pastIdps") await fetchMyIdps("Past", $("pastIdpSearch").value);
+  if (go === "browseIdps") await fetchBrowseIdps($("browseSearch").value, $("browseCategory").value);
+  if (go === "shortlist") await fetchFavourites($("shortlistSearch").value);
+  if (go === "categories") await fetchPmCategories($("categorySearch").value);
+  if (go === "categoryCreate") {
+    $("categoryCreateForm").reset();
+    msg("categoryCreateMsg", "Add a new IDP category for customers to browse.");
+  }
   show(go);
 });
 

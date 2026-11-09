@@ -27,6 +27,11 @@ async function startSession(account) {
         await Promise.all([fetchProfiles(), fetchAccounts()]);
     } else if (r === "id") {
         await fetchCompanyProfile(me.id);
+    } else if (r === "customer") {
+        await loadCustomerHome();
+    } else if (r === "pm") {
+        await fetchPmCategories();
+        resetReport();
     }
 
     show("dash");

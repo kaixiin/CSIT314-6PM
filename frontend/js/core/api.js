@@ -93,3 +93,90 @@ async function fetchCompanies(query) {
     otherCompanies = [];
   }
 }
+
+// ---- IDPs, categories and shortlists ----
+// Every call returns { ok, data }. On failure, data.message says why, so a
+// route that doesn't exist yet shows a message instead of crashing the page.
+async function api(method, path, body) {
+  try {
+    const res = await fetch(`${API_CONFIG.BASE_URL}${path}`, {
+      method,
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+      credentials: 'include'
+    });
+    const data = await res.json().catch(() => ({ message: "The server did not respond as expected." }));
+    return { ok: res.ok, data };
+  } catch (error) {
+    console.error(`${method} ${path} failed:`, error);
+    return { ok: false, data: { message: "Cannot connect to the server." } };
+  }
+}
+
+const imageUrl = u => (u && u.startsWith("/") ? API_CONFIG.BASE_URL + u : (u || ""));
+
+const toIdp = i => ({
+  id: i.idp_id,
+  accountId: i.account_id,
+  categoryId: i.category_id,
+  categoryName: i.category_name || "",
+  title: i.title,
+  desc: i.description || "",
+  location: i.location || "",
+  budget: Number(i.budget) || 0,
+  status: i.status,
+  images: (i.images || []).map(imageUrl),
+  createdAt: i.created_at || "",
+  designer: i.designer || "",
+  companyName: i.company_name || "",
+  companyEmail: i.company_email || "",
+  companyPhone: i.company_phone || "",
+  saved: !!i.is_saved
+});
+
+const toCategory = c => ({
+  id: c.category_id,
+  name: c.name,
+  desc: c.description || "",
+  status: c.is_suspended ? "Suspended" : "Active",
+  idps: (c.idps || []).map(toIdp)
+});
+
+const queryString = params => {
+  const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v));
+  return q.toString() ? `?${q}` : "";
+};
+
+async function fetchMyIdps(status, query) {
+  const r = await api("GET", `/api/id/idps${queryString({ q: (query || "").trim(), status })}`);
+  loadError[status] = !r.ok;
+  myIdps[status] = r.ok ? r.data.idps.map(toIdp) : [];
+}
+
+async function fetchIdCategories() {
+  const r = await api("GET", "/api/id/categories");
+  idpCategories = r.ok ? r.data.categories.map(toCategory) : [];
+}
+
+async function fetchBrowseIdps(query, categoryId) {
+  const r = await api("GET", `/api/customer/idps${queryString({ q: (query || "").trim(), category_id: categoryId })}`);
+  loadError.browse = !r.ok;
+  browseIdpList = r.ok ? r.data.idps.map(toIdp) : [];
+}
+
+async function fetchCustomerCategories() {
+  const r = await api("GET", "/api/customer/categories");
+  customerCategories = r.ok ? r.data.categories.map(toCategory) : [];
+}
+
+async function fetchFavourites(query) {
+  const r = await api("GET", `/api/customer/favourites${queryString({ q: (query || "").trim() })}`);
+  loadError.favourites = !r.ok;
+  favourites = r.ok ? r.data.idps.map(toIdp) : [];
+}
+
+async function fetchPmCategories(query) {
+  const r = await api("GET", `/api/pm/categories${queryString({ q: (query || "").trim() })}`);
+  loadError.categories = !r.ok;
+  pmCategories = r.ok ? r.data.categories.map(toCategory) : [];
+}
