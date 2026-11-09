@@ -94,7 +94,7 @@ class ViewAllUserProfileC:
         return UserProfile.view_all_user_profiles()
 
 # -----------------------------------------
-# VIEW UA - #9 + VIEW ALL UAs
+# VIEW UA - #9 
 # Controller: ViewUserAccountC
 # Methods:
 #   view_user_account(account_id:int): UserAccount
@@ -124,7 +124,7 @@ class SuspendUserAccountC:
         return UserAccount.suspend_user_account(account_id, is_suspended)
     
 # -----------------------------------------
-# SEARCH UA - #12
+# SEARCH UA - #12 + VIEW ALL UAs
 # Controller: SearchUserAccountC
 # Methods:
 #   search_user_account(keyword:str): List[UserAccount]

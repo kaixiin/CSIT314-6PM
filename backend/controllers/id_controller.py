@@ -73,3 +73,57 @@ class SearchCompanyProfileC:
 class CreateIDPC:
     def create_idp(self, account_id, category_id, title, description, location, budget, status, images=None):
         return IDP.create_idp(account_id, category_id, title, description, location, budget, status, images)
+
+# -----------------------------------------
+# ID VIEW IDP - #21, 26
+# Controller: IDViewIDPC
+# Methods:
+#   id_view_idp()
+# Calls: IDP.id_view_idp() in models/idp.py
+ 
+class IDViewIDPC:
+    def id_view_idp(self, idp_id, account_id):
+        idp = IDP.id_view_idp(idp_id, account_id)
+
+        return idp
+
+# -----------------------------------------
+# UPDATE IDP - #22, 27
+# Controller:UpdateIDPC
+# Methods:
+#   update_idp()
+# Calls: IDP.update_idp() in models/idp.py
+ 
+class UpdateIDPC:
+    def update_idp(self, idp_id, title=None, description=None, location=None,
+                   budget=None, category_id=None, status=None, images=None):
+        
+        is_updated = IDP.update_idp(idp_id, title=title, description=description, location=location, 
+                budget=budget, category_id=category_id, status=status, images=images)
+
+        return is_updated
+
+# -----------------------------------------
+# DELETE IDP - #23, 28
+# Controller:DeleteIDPC
+# Methods:
+#   delete_idp()
+# Calls: IDP.delete_idp() in models/idp.py
+ 
+class DeleteIDPC:
+    def delete_idp(self, account_id, idp_id):
+        
+        is_deleted = IDP.delete_idp(account_id, idp_id)
+
+        return is_deleted
+
+# -----------------------------------------
+# ID SEARCH IDP - #24, 29
+# Controller: IDSearchIDPC
+# Methods:
+#   search_my_idp()
+# Calls: IDP.search_my_idp() in models/idp.py
+ 
+class IDSearchIDPC:
+    def search_my_idp(self, account_id, keyword, status=None):
+        return IDP.search_my_idp(account_id, keyword, status)
