@@ -29,3 +29,15 @@ class IDPView(db.Model):
             db.session.rollback()
             print(f"Error recording view: {e}")
             return False
+
+    #COUNT VIEWS - #37
+    @staticmethod
+    def count_views(idp_id):
+        
+        try:
+            count = db.session.query(IDPView).filter_by(idp_id=idp_id).count()
+            return count
+        
+        except Exception as e:
+            print(f"Error counting views: {e}")
+            return 0

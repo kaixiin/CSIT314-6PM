@@ -1,5 +1,8 @@
 from models.company_profile import CompanyProfile
 from models.idp import IDP
+from models.idp_view import IDPView
+from models.favourite import Favourite
+from models.idp_category import IDPCategory
 
 # COMPANY PROFILE
 # -----------------------------------------
@@ -127,3 +130,28 @@ class DeleteIDPC:
 class IDSearchIDPC:
     def search_my_idp(self, account_id, keyword, status=None):
         return IDP.search_my_idp(account_id, keyword, status)
+
+# -----------------------------------------
+# COUNT VIEWS ON IDP - #37
+# Controller: ViewIDPViewCountC
+# Methods:
+#   count_views(idp_id)
+# Calls: IDPView.count_views() in models/idp_view.py
+class ViewIDPViewCountC:
+    def count_views(self, idp_id):
+        return IDPView.count_views(idp_id)
+
+# -----------------------------------------
+# COUNT SHORTLIST ON IDP - #38
+# Controller: ViewIDPShortlistCountC
+# Methods:
+#   count_shortlists(idp_id)
+# Calls: Favourite.count_shortlists() in models/favourite.py
+class ViewIDPShortlistCountC:
+    def count_shortlists(self, idp_id):
+        return Favourite.count_shortlists(idp_id)
+
+#HELPER GET CAT
+class ViewCategoriesC:
+    def get_all_categories(self):
+        return IDPCategory.get_all_categories()

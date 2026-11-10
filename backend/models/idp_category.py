@@ -87,3 +87,13 @@ class IDPCategory(db.Model):
         if not include_suspended:
             query = query.filter(IDPCategory.is_suspended.is_not(True))
         return query.order_by(IDPCategory.name).all()
+
+    @classmethod
+    def get_all_categories(cls):
+    
+        try:
+            categories = db.session.query(cls).order_by(cls.name).all()
+            return categories
+        except Exception as e:
+            print(f"Error fetching categories: {e}")
+            return None

@@ -94,3 +94,13 @@ class Favourite(db.Model):
         except Exception as e:
             print(f"Error searching favourites: {e}")
             return None
+
+    #COUNT IDP SHORTLIST - #38
+    @staticmethod
+    def count_shortlists(idp_id):
+        try:
+            count = db.session.query(Favourite).filter_by(idp_id=idp_id).count()
+            return count
+        except Exception as e:
+            print(f"Error counting shortlists: {e}")
+            return 0
