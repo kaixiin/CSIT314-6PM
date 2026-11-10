@@ -1,4 +1,4 @@
-# SEACRH IDP AS CUSTOMER - #32
+# SEARCH IDP AS CUSTOMER - #32
 # Boundary:CustSearchIDPPg
 # Methods: search_idp(data), display_success(), display_fail(message, status)
 

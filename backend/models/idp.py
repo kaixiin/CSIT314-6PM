@@ -222,3 +222,15 @@ class IDP(db.Model):
         except Exception as e:
             print(f"Error searching IDPs: {e}")
             return None
+
+    # CUST VIEW IDP - #33
+    @classmethod
+    def view_idp(cls, idp_id):
+        try:
+            idp = db.session.get(cls, idp_id)
+            return idp
+        except Exception as e:
+            print(f"Error fetching IDP: {e}")
+            return None
+
+    
