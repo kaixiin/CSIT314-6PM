@@ -196,3 +196,29 @@ class IDP(db.Model):
             print(f"Error searching IDPs: {e}")
             return None
 
+    # CUST SEARCH IDP - #32
+    @classmethod
+    def search_idp(cls, keyword, category_id=None):
+       
+        try:
+            query = db.session.query(cls)
+            
+            if category_id is not None and category_id > 0:
+                query = query.filter_by(category_id=category_id)
+            
+            if keyword and keyword.strip():
+                search_term = f"%{keyword}%"
+                query = query.filter(
+                    or_(
+                        cls.title.ilike(search_term),
+                        cls.description.ilike(search_term),
+                        cls.location.ilike(search_term)
+                    )
+                )
+            
+            idps = query.order_by(cls.created_at.desc()).all()
+            return idps
+        
+        except Exception as e:
+            print(f"Error searching IDPs: {e}")
+            return None
