@@ -58,7 +58,7 @@ async function openCustomerProject(id, from) {
     $("idViewBack").dataset.go = from;
     $("idViewBack").textContent = `← Back to ${from === "shortlist" ? "My Shortlist" : "Browse IDPs"}`;
     $("idViewTitle").textContent = i.title;
-    $("idViewMeta").textContent = i.companyName ? `${i.categoryName} · by ${i.companyName}` : i.categoryName;
+    $("idViewMeta").textContent = i.companyName ? `${i.categoryName} by ${i.companyName}` : i.categoryName;
     $("idViewThumbs").innerHTML = i.images.map((url, n) =>
         `<button class="thumb" data-thumb="${n}" aria-label="Photo ${n + 1}"><img src="${esc(url)}" alt=""></button>`).join("");
     $("idViewThumbs").hidden = i.images.length < 2;
@@ -72,7 +72,7 @@ async function openCustomerProject(id, from) {
     // The designer may not have created a company profile yet
     $("idViewContact").hidden = !i.companyName;
     $("idViewCompany").textContent = i.companyName;
-    $("idViewContactLine").textContent = [i.companyEmail, i.companyPhone].filter(Boolean).join(" · ");
+    $("idViewContactLine").textContent = [i.companyEmail, i.companyPhone].filter(Boolean).join(" | ");
     show("idpView");
 }
 

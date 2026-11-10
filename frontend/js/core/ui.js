@@ -202,7 +202,7 @@ function show(id) {
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
   document.body.className = r || "";
   $("status").textContent = me
-    ? "Logged in as " + (r === "admin" ? "System Admin" : r === "id" ? "ID" : r === "customer" ? "Customer" : r === "pm" ? "PM" : "User") + (me.name ? " — " + me.name : "")
+    ? "Logged in as " + (r === "admin" ? "System Admin" : r === "id" ? "ID" : r === "customer" ? "Customer" : r === "pm" ? "PM" : "User") + (me.name ? " - " + me.name : "")
     : "Logged out";
   $("logout").hidden = !me;
 

@@ -24,7 +24,7 @@ function idpCard(i) {
             <div class="pcard-title">${esc(i.title)}</div>
             <span class="badge ${i.status.toLowerCase()}">${esc(i.status)}</span>
             <p class="pcard-desc">${esc(i.desc)}</p>
-            <p class="pcard-desc">${esc(i.location)} &middot; ${fmtMoney(i.budget)}</p>
+            <p class="pcard-desc">${esc(i.location)} | ${fmtMoney(i.budget)}</p>
         </div>
         <div class="pcard-links">
             <button class="textlink" data-open-idp="${i.id}">View</button>
