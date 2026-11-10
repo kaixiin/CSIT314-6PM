@@ -1,4 +1,3 @@
-// idp.js (customer)
 // Customer role: search IDPs by name and category, and view a project.
 // Opening a project records one view on the backend.
 //

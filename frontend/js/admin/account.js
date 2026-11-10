@@ -1,4 +1,3 @@
-// account.js
 // Admin: create / update / suspend / reactivate User Accounts (#8, #10, #11).
 // Routes: /api/admin/accounts (see the API Route Sync doc). Search and view
 // (#12, #9) load through fetchAccounts() in js/core/api.js.
@@ -37,8 +36,6 @@ async function triggerCreateAccount(event) {
             return;
         }
 
-        // Backend is the source of truth -- re-fetch instead of guessing
-        // what the new row looks like.
         await fetchAccounts();
 
         document.getElementById("accountForm").reset();

@@ -1,4 +1,3 @@
-// category.js
 // Platform Manager role: create / view / update / suspend / search IDP categories.
 //
 // Uses /api/pm/categories. Responses are translated by toCategory() in api.js.

@@ -1,11 +1,8 @@
-// company.js
 // ID role: create / view / update / delete Company Profile (#15-#18).
 // Browsing/searching other companies (#19) is read-only and already
 // handled by renderCompanyList()/openCompetitor() in core/ui.js.
 //
-// Connected to the real backend (/api/id/company, company_routes.py). The
-// account comes from the session, so the URL carries no id. Request bodies
-// use the backend's field names; responses are translated by toCompany() in api.js.
+// Uses /api/id/company. The account comes from the session.
 
 const COMPANY_URL = `${API_CONFIG.BASE_URL}/api/id/company`;
 const LOGO_TYPES = ["image/png", "image/jpeg"];
@@ -85,8 +82,6 @@ async function triggerCreateCompanyProfile(event) {
             return;
         }
 
-        // Backend is the source of truth -- re-fetch instead of guessing
-        // what the saved record looks like.
         await fetchCompanyProfile(me.id);
 
         event.target.reset();

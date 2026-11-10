@@ -1,4 +1,3 @@
-// report.js
 // Platform Manager role: generate a daily, weekly or monthly report.
 // Reports are calculated by the backend when asked for, not stored.
 //

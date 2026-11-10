@@ -1,10 +1,6 @@
-// login.js
 // Login: no role dropdown. Role is derived from whichever account matches
 // (see roleOfAccount() in state.js) -- never chosen by the person logging in.
 // This matches the Login UCD/SQ, which only takes a username and password.
-//
-// Now connected to the real backend (per the auth_routes.py contract) --
-// local-only testing is removed.
 
 // Shared by login and page load: stores the account, loads this role's data,
 // then lets show() in core/ui.js work out which screen to land on.
@@ -62,7 +58,6 @@ async function triggerLogin(event) {
     msg("loginMsg", "Signing in...", false);
 
     try {
-        // 1. Fetch connection pointing directly to the backend Blueprint routing prefix
         const response = await fetch(`${API_CONFIG.BASE_URL}/api/login`, {
             method: 'POST',
             headers: {
@@ -77,19 +72,12 @@ async function triggerLogin(event) {
 
         const data = await response.json();
 
-        // 2. Process return payload using keys matching auth_routes.py exactly
         if (!data.success) {
             msg("loginMsg", data.message || "Login unsuccessful, email or password is incorrect.", true);
             document.getElementById('email').focus();
             return;
         }
 
-        // NOTE for whoever owns the backend: state.js's roleOfAccount() expects
-        // `me.role === "admin"` or `me.profile === "Interior Design" / "Customer"`.
-        // If the backend's account_type already returns one of
-        // "admin" / "id" / "pm" / "customer" directly, roleOfAccount() in
-        // state.js should be simplified to just read me.role straight --
-        // flag this with the backend dev so the two sides agree on one shape.
         document.getElementById("loginForm").reset();
         msg("loginMsg", "Enter your email and password.", false);
 

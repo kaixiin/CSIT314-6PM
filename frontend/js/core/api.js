@@ -1,4 +1,3 @@
-// api.js
 // Backend data loaders: every GET that fills the shared state in state.js.
 // Loads after state.js and before ui.js.
 

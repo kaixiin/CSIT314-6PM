@@ -1,4 +1,3 @@
-// idp.js
 // ID role: create / view / update / delete / search Current and Past IDPs,
 // and the views and shortlist counts on each project.
 //

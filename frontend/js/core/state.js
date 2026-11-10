@@ -1,12 +1,6 @@
-// state.js
 // Shared app state and role mapping used by every role's screens.
 // Must load FIRST (after config.js): everything else in core/ and the
 // feature folders (auth/, admin/, id/) uses the globals defined here.
-//
-// No seeded demo data -- the backend database is the single source of
-// truth. These arrays start empty and get filled in by the fetch*() loaders
-// in api.js, called right after login and after any create/update/suspend/delete
-// action. Screens render from whatever was most recently fetched into them.
 
 let accounts = [];
 let profiles = [];

@@ -1,4 +1,3 @@
-// ui.js
 // Screen helpers, list/detail rendering, the confirmation dialog, the central
 // view router show(), and navigation click handling.
 // Loads after state.js and api.js.
@@ -102,10 +101,6 @@ function openAccount(id) {
 }
 
 // ---- Company profile (ID) read/display helpers ----
-// NOTE: these only *render* company-profile data onto the screen. The actual
-// create / update / delete form handlers for the ID role (companyCreateForm,
-// companyEditForm, #ccDeleteBtn, #companySearch) are NOT wired here -- that's
-// the Sprint 3 JS to be added separately (js/id/company.js).
 const showLogo = (imgId, url) => {
   if (url) $(imgId).src = url; else $(imgId).removeAttribute("src");
   $(imgId).hidden = !url;
@@ -155,13 +150,7 @@ function fillCompanyEditForm() {
   msg("ccEditMsg", "Keep your company profile up to date so customers see accurate information.");
 }
 
-// Shared confirmation modal -- replaces the browser's native confirm()
-// popup with the styled dialog from the wireframe (title + body text +
-// Cancel / red confirm button). Used for Suspend/Reactivate (profile,
-// account) and Delete (company profile), per UCD items #128 and #11,
-// which both call for "a warning with a confirmation dialogue box."
-//
-// Usage: const ok = await confirmDialog("Delete Company Profile?", "Are you sure...", "Delete Profile");
+// Styled confirm popup used before suspending or deleting.
 function confirmDialog(title, body, confirmLabel) {
   return new Promise(resolve => {
     $("modalTitle").textContent = title;
@@ -184,9 +173,7 @@ function confirmDialog(title, body, confirmLabel) {
 }
 
 // ---- Central view router ----
-// Every screen switch (login, nav clicks, post-submit redirects) goes
-// through show(id). It also enforces role guards, so a user can never land
-// on a screen another role owns just by changing state.
+// Every screen change goes through show(), which also stops a role opening another role's screens.
 function show(id) {
   const r = roleOf();
   if (!r) id = "login";
@@ -233,9 +220,7 @@ function show(id) {
 }
 
 // ---- Navigation click delegation (data-go links, list rows) ----
-// Generic routing only -- no feature-specific business logic lives here.
-// Async so each nav click can pull fresh data from the backend before the
-// screen it's going to is rendered.
+// Handles data-go links and list rows, loading fresh data first.
 document.addEventListener("click", async e => {
   const row1 = e.target.closest("[data-open-profile]");
   if (row1) return openProfile(Number(row1.dataset.openProfile));

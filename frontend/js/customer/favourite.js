@@ -1,4 +1,3 @@
-// favourite.js
 // Customer role: view and search My Shortlist, save a project, remove a project.
 //
 // Uses /api/customer/favourites. The list always belongs to the logged-in
