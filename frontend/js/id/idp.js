@@ -13,8 +13,14 @@ const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const idpListView = status => (status === "Past" ? "pastIdps" : "currentIdps");
 const idpListName = status => (status === "Past" ? "My Past IDPs" : "My Current IDPs");
 
-// New photos waiting to be saved, as data URLs. null = none chosen.
+// Photos on each form: saved photo URLs plus new photos as data URLs. null = unchanged.
 const pendingPhotos = { idpPhotos: null, edIdpPhotos: null };
+const PHOTO_FORMS = {
+    idpPhotos: { tiles: "idpPhotoTiles", msg: "idpCreateMsg" },
+    edIdpPhotos: { tiles: "edIdpPhotoTiles", msg: "idpDetailMsg" }
+};
+const savedPhotos = inputId => (inputId === "edIdpPhotos" && openIdp ? openIdp.images : []);
+const formPhotos = inputId => pendingPhotos[inputId] ?? savedPhotos(inputId);
 
 function idpCard(i) {
     return `<article class="pcard">
@@ -47,39 +53,40 @@ const categoryOptions = (selected, extra) =>
     idpCategories.concat(extra || []).map(c =>
         `<option value="${c.id}" ${c.id === selected ? "selected" : ""}>${esc(c.name)}</option>`).join("");
 
-// Shows chosen or saved photos, one per tile. Always at least 4 empty tiles beside "+ Add".
-function renderPhotoTiles(tilesId, urls) {
+// One tile per photo, each with a remove button. Always at least 4 tiles beside "+ Add".
+function renderPhotoTiles(inputId) {
+    const urls = formPhotos(inputId);
     const count = Math.max(4, urls.length);
-    $(tilesId).innerHTML = Array.from({ length: count }, (_, n) =>
-        urls[n] ? `<span class="photo filled"><img src="${esc(urls[n])}" alt=""></span>` : `<span class="photo"></span>`).join("");
+    $(PHOTO_FORMS[inputId].tiles).innerHTML = Array.from({ length: count }, (_, n) => urls[n]
+        ? `<span class="photo filled"><img src="${esc(urls[n])}" alt="">
+            <button type="button" class="photo-remove" data-remove-photo="${inputId}" data-index="${n}" aria-label="Remove photo ${n + 1}">&times;</button>
+        </span>`
+        : `<span class="photo"></span>`).join("");
 }
 
-const photoError = files => {
-    if (files.length > MAX_PHOTOS) return `You can add up to ${MAX_PHOTOS} photos.`;
+const photoError = (files, current) => {
+    if (current + files.length > MAX_PHOTOS) return `A project can have up to ${MAX_PHOTOS} photos. Remove one to add another.`;
     if (files.some(f => !PHOTO_TYPES.includes(f.type))) return "Photos must be JPG or PNG images.";
     if (files.some(f => f.size > MAX_PHOTO_BYTES)) return "Each photo must be 5MB or smaller.";
     return "";
 };
 
-// currentPhotos() gives the photos to go back to if the choice is rejected.
-function wirePhotoInput(inputId, tilesId, msgId, currentPhotos) {
+// New photos are added after the ones already on the form.
+function wirePhotoInput(inputId) {
     $(inputId).addEventListener("change", async () => {
         const files = Array.from($(inputId).files);
-        const reject = text => {
-            $(inputId).value = "";
-            pendingPhotos[inputId] = null;
-            renderPhotoTiles(tilesId, currentPhotos());
-            msg(msgId, text, true);
-        };
+        $(inputId).value = "";  // so the same file can be chosen again after removing it
         if (!files.length) return;
-        const error = photoError(files);
-        if (error) return reject(error);
+        const current = formPhotos(inputId);
+        const error = photoError(files, current.length);
+        if (error) return msg(PHOTO_FORMS[inputId].msg, error, true);
         try {
-            pendingPhotos[inputId] = await Promise.all(files.map(readLogo));
-            renderPhotoTiles(tilesId, pendingPhotos[inputId]);
+            pendingPhotos[inputId] = current.concat(await Promise.all(files.map(readLogo)));
+            msg(PHOTO_FORMS[inputId].msg, "");
+            renderPhotoTiles(inputId);
         } catch (err) {
             console.error("Could not read photo file:", err);
-            reject("Could not read one of those images.");
+            msg(PHOTO_FORMS[inputId].msg, "Could not read one of those images.", true);
         }
     });
 }
@@ -101,7 +108,7 @@ async function openIdpCreate(status) {
     setIdpBackLinks(status);
     $("idpCreateForm").reset();
     pendingPhotos.idpPhotos = null;
-    renderPhotoTiles("idpPhotoTiles", []);
+    renderPhotoTiles("idpPhotos");
     $("idpCategory").innerHTML = `<option value="">Select a category</option>` + categoryOptions();
     $("idpTitle").placeholder = status === "Past" ? "e.g. Modern 3-Room Flat Makeover" : "e.g. Level Condo Renovation";
     msg("idpCreateMsg", status === "Past"
@@ -137,7 +144,7 @@ async function openIdpDetail(id) {
     $("edIdpBudget").value = i.budget;
     $("edIdpPhotos").value = "";
     pendingPhotos.edIdpPhotos = null;
-    renderPhotoTiles("edIdpPhotoTiles", i.images);
+    renderPhotoTiles("edIdpPhotos");
     msg("idpDetailMsg", "");
     show("idpDetail");
 }
@@ -168,8 +175,9 @@ async function triggerUpdateIdp(event) {
     if (roleOf() !== "id" || !openIdp) return;
     const status = document.querySelector('input[name="idpStatus"]:checked').value;
 
-    // images stays undefined when no new photos were chosen, so JSON.stringify
-    // leaves it out and the backend keeps the current ones.
+    // images stays undefined when the photos were not changed, so JSON.stringify
+    // leaves it out and the backend keeps the current ones. Otherwise it is the
+    // full list: saved photo URLs to keep, plus new photos.
     const r = await api("PUT", `${IDP_URL}/${openIdp.id}`, {
         category_id: Number($("edIdpCategory").value),
         title: $("edIdpTitle").value.trim(),
@@ -177,7 +185,7 @@ async function triggerUpdateIdp(event) {
         location: $("edIdpLocation").value.trim(),
         budget: Number($("edIdpBudget").value),
         status,
-        images: pendingPhotos.edIdpPhotos || undefined
+        images: pendingPhotos.edIdpPhotos ?? undefined
     });
     if (!r.ok) return msg("idpDetailMsg", r.data.message || "Failed to update project.", true);
 
@@ -204,6 +212,12 @@ async function triggerDeleteIdp(id, title, status) {
 }
 
 document.addEventListener("click", e => {
+    const remove = e.target.closest("[data-remove-photo]");
+    if (remove) {
+        const inputId = remove.dataset.removePhoto;
+        pendingPhotos[inputId] = formPhotos(inputId).filter((_, n) => n !== Number(remove.dataset.index));
+        return renderPhotoTiles(inputId);
+    }
     const create = e.target.closest("[data-create-idp]");
     if (create) return openIdpCreate(create.dataset.createIdp);
     const open = e.target.closest("[data-open-idp]");
@@ -221,8 +235,8 @@ $("idpDetailForm").addEventListener("submit", triggerUpdateIdp);
 $("idpDeleteBtn").addEventListener("click", () => {
     if (openIdp) triggerDeleteIdp(openIdp.id, openIdp.title, openIdp.status);
 });
-wirePhotoInput("idpPhotos", "idpPhotoTiles", "idpCreateMsg", () => []);
-wirePhotoInput("edIdpPhotos", "edIdpPhotoTiles", "idpDetailMsg", () => (openIdp ? openIdp.images : []));
+wirePhotoInput("idpPhotos");
+wirePhotoInput("edIdpPhotos");
 
 wireSearch("currentIdpSearch", q => fetchMyIdps("Current", q), () => renderMyIdps("currentIdps"));
 wireSearch("pastIdpSearch", q => fetchMyIdps("Past", q), () => renderMyIdps("pastIdps"));

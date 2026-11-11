@@ -8,6 +8,8 @@ from config import Config
 
 IMAGE_PATTERN = re.compile(r"^data:image/(png|jpeg);base64,(.+)$", re.DOTALL)
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
+MAX_IMAGES = 5
+SAVED_NAME = re.compile(r"^[0-9a-f]{32}\.(png|jpg)$")
 UPLOAD_FOLDER = Config.UPLOAD_FOLDER
 
 def read_idp_fields(data):
@@ -102,6 +104,20 @@ def save_idp_image(image_data):
 
     return filename, None
 
+def saved_photo_name(item):
+    # A photo that is already saved comes back as its URL, e.g. /api/idp-images/<name>.png
+    if not isinstance(item, str) or item.startswith("data:"):
+        return None
+    name = item.rsplit("/", 1)[-1]
+    if SAVED_NAME.match(name) and os.path.exists(os.path.join(UPLOAD_FOLDER, name)):
+        return name
+    return None
+
+def new_photo_names(images, data_images):
+    # The files saved by this request, so they can be removed if saving the IDP fails
+    kept = {saved_photo_name(i) for i in (data_images if isinstance(data_images, list) else [])}
+    return [name for name in (images or []) if name not in kept]
+
 def save_idp_images(images):
     if images is None or images == "":
         return [], None
@@ -112,12 +128,17 @@ def save_idp_images(images):
     if not isinstance(images, list):
         return None, "Images must be a list"
 
-    if len(images) > 10:
-        return None, "Maximum 10 images allowed"
+    if len(images) > MAX_IMAGES:
+        return None, f"Maximum {MAX_IMAGES} images allowed"
 
     saved_filenames = []
+    filenames = []
 
     for idx, img in enumerate(images):
+        kept = saved_photo_name(img)
+        if kept:
+            filenames.append(kept)
+            continue
         filename, error = save_idp_image(img)
         if error:
             for saved in saved_filenames:
@@ -125,8 +146,9 @@ def save_idp_images(images):
             return None, f"Image {idx + 1}: {error}"
         if filename:
             saved_filenames.append(filename)
+            filenames.append(filename)
 
-    return saved_filenames, None
+    return filenames, None
 
 def remove_idp_image(filename):
     if filename:
@@ -217,7 +239,7 @@ def validate_update_idp_fields(data):
         images, error = save_idp_images(data.get("images"))   
         if error:
             return None, error
-        validated["images"] = images if images else None   
+        validated["images"] = images
 
     if not validated:
         return None, "No fields provided for update"

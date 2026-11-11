@@ -1,5 +1,5 @@
 from flask import jsonify, session
-from boundaries.idp import read_idp_form, remove_idp_images
+from boundaries.idp import read_idp_form, remove_idp_images, new_photo_names
 from controllers.id_controller import CreateIDPC
 
 class CreateIDPPg:
@@ -21,7 +21,7 @@ class CreateIDPPg:
         
         if not new_idp:
             # remove saved uploaded images if create fails
-            remove_idp_images(fields["images"])  
+            remove_idp_images(new_photo_names(fields["images"], data.get("images")))
             return self.display_fail("Create Interior Design Project failed.")
             
         return self.display_success(new_idp)

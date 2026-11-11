@@ -6,7 +6,7 @@
 
 from flask import jsonify
 from controllers.id_controller import UpdateIDPC
-from boundaries.idp import validate_update_idp_fields, remove_idp_images
+from boundaries.idp import validate_update_idp_fields, remove_idp_images, new_photo_names
 
 class UpdateIDPPg:
     def update_idp(self, idp_id, data):
@@ -23,14 +23,14 @@ class UpdateIDPPg:
         
         if is_updated is None:
             # clean up any newly uploaded images if update failed
-            if "images" in fields and fields["images"]:
-                remove_idp_images(fields["images"])
+            if fields.get("images"):
+                remove_idp_images(new_photo_names(fields["images"], data.get("images")))
             return self.display_fail(f'IDP with ID {idp_id} not found', 404)
         
         if is_updated is False:
             # clean up any newly uploaded images if update failed
-            if "images" in fields and fields["images"]:
-                remove_idp_images(fields["images"])
+            if fields.get("images"):
+                remove_idp_images(new_photo_names(fields["images"], data.get("images")))
             return self.display_fail('Failed to update IDP. Database error occurred.')
         
         return self.display_success()
