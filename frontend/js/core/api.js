@@ -104,13 +104,18 @@ async function api(method, path, body) {
       body: body ? JSON.stringify(body) : undefined,
       credentials: 'include'
     });
-    const data = await res.json().catch(() => ({ message: "The server did not respond as expected." }));
-    return { ok: res.ok, data };
+    const data = await res.json().catch(() => ({ success: false, message: "The server did not respond as expected." }));
+    return { ok: res.ok && data.success !== false, data };
   } catch (error) {
     console.error(`${method} ${path} failed:`, error);
     return { ok: false, data: { message: "Cannot connect to the server." } };
   }
 }
+
+// The backend sends lists under "data" (PM categories under "categories"),
+// and a single project under "profile" or "data".
+const listFrom = (d, key) => d[key] || d.data || [];
+const itemFrom = (d, key) => d[key] || d.profile || d.data;
 
 const imageUrl = u => (u && u.startsWith("/") ? API_CONFIG.BASE_URL + u : (u || ""));
 
@@ -137,7 +142,7 @@ const toCategory = c => ({
   id: c.category_id,
   name: c.name,
   desc: c.description || "",
-  status: c.is_suspended ? "Suspended" : "Active",
+  status: (c.is_suspended ?? c.isSuspended) ? "Suspended" : "Active",
   idps: (c.idps || []).map(toIdp)
 });
 
@@ -149,33 +154,33 @@ const queryString = params => {
 async function fetchMyIdps(status, query) {
   const r = await api("GET", `/api/id/idps${queryString({ q: (query || "").trim(), status })}`);
   loadError[status] = !r.ok;
-  myIdps[status] = r.ok ? r.data.idps.map(toIdp) : [];
+  myIdps[status] = r.ok ? listFrom(r.data, "idps").map(toIdp) : [];
 }
 
 async function fetchIdCategories() {
   const r = await api("GET", "/api/id/categories");
-  idpCategories = r.ok ? r.data.categories.map(toCategory) : [];
+  idpCategories = r.ok ? listFrom(r.data, "categories").map(toCategory) : [];
 }
 
 async function fetchBrowseIdps(query, categoryId) {
   const r = await api("GET", `/api/customer/idps${queryString({ q: (query || "").trim(), category_id: categoryId })}`);
   loadError.browse = !r.ok;
-  browseIdpList = r.ok ? r.data.idps.map(toIdp) : [];
+  browseIdpList = r.ok ? listFrom(r.data, "idps").map(toIdp) : [];
 }
 
 async function fetchCustomerCategories() {
   const r = await api("GET", "/api/customer/categories");
-  customerCategories = r.ok ? r.data.categories.map(toCategory) : [];
+  customerCategories = r.ok ? listFrom(r.data, "categories").map(toCategory) : [];
 }
 
 async function fetchFavourites(query) {
   const r = await api("GET", `/api/customer/favourites${queryString({ q: (query || "").trim() })}`);
   loadError.favourites = !r.ok;
-  favourites = r.ok ? r.data.idps.map(toIdp) : [];
+  favourites = r.ok ? listFrom(r.data, "idps").map(toIdp) : [];
 }
 
 async function fetchPmCategories(query) {
   const r = await api("GET", `/api/pm/categories${queryString({ q: (query || "").trim() })}`);
   loadError.categories = !r.ok;
-  pmCategories = r.ok ? r.data.categories.map(toCategory) : [];
+  pmCategories = r.ok ? listFrom(r.data, "categories").map(toCategory) : [];
 }

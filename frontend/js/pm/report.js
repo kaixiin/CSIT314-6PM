@@ -44,9 +44,9 @@ function setChange(id, current, previous, versus) {
     $(id).className = "change" + (diff > 0 ? " up" : diff < 0 ? " down" : "");
 }
 
+// Each figure comes as { current, previous }.
 function renderReport(period, data) {
     const p = PERIODS[period];
-    const prev = data.previous;
     const end = `${fmtReportDate(data.end_date)} ${data.end_date.slice(0, 4)}`;
 
     $("reportTitle").textContent = p.title;
@@ -55,18 +55,18 @@ function renderReport(period, data) {
         : `${p.label}: ${fmtReportDate(data.start_date)} to ${end}`;
     $("reportGenerated").textContent = fmtGeneratedOn(new Date());
 
-    $("repNew").textContent = data.new_idps.toLocaleString("en-US");
-    $("repViews").textContent = data.views.toLocaleString("en-US");
-    $("repSaves").textContent = data.shortlists.toLocaleString("en-US");
-    setChange("repNewChange", data.new_idps, prev.new_idps, p.versus);
-    setChange("repViewsChange", data.views, prev.views, p.versus);
-    setChange("repSavesChange", data.shortlists, prev.shortlists, p.versus);
+    $("repNew").textContent = data.new_idps.current.toLocaleString("en-US");
+    $("repViews").textContent = data.views.current.toLocaleString("en-US");
+    $("repSaves").textContent = data.shortlists.current.toLocaleString("en-US");
+    setChange("repNewChange", data.new_idps.current, data.new_idps.previous, p.versus);
+    setChange("repViewsChange", data.views.current, data.views.previous, p.versus);
+    setChange("repSavesChange", data.shortlists.current, data.shortlists.previous, p.versus);
 
     $("reportTop").innerHTML = data.top_projects.length
         ? data.top_projects.map((t, n) => `<tr>
             <td>${n + 1}</td>
             <td>${esc(t.title)}</td>
-            <td>${esc(t.category_name)}</td>
+            <td>${esc(t.category)}</td>
             <td>${t.views.toLocaleString("en-US")}</td>
         </tr>`).join("")
         : `<tr><td colspan="4" class="empty">No projects were viewed in this period.</td></tr>`;
@@ -85,7 +85,7 @@ async function triggerGenerateReport() {
         $("reportEmpty").textContent = r.data.message || "Could not generate the report.";
         return;
     }
-    renderReport(period, r.data);
+    renderReport(period, r.data.report);
 }
 
 document.querySelectorAll(".period [data-period]").forEach(b =>

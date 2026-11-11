@@ -5,9 +5,6 @@
 
 // Used by both Browse IDPs and My Shortlist.
 function customerCard(i, from) {
-    const remove = from === "shortlist"
-        ? `<button class="sm remove-btn" data-remove-favourite="${i.id}">Remove from shortlist</button>`
-        : "";
     return `<article class="pcard clickable" data-open-customer-idp="${i.id}" data-from="${from}">
         <button class="pcard-open" aria-label="Open ${esc(i.title)}">
             <span class="pcard-img">${i.images[0] ? `<img src="${esc(i.images[0])}" alt="">` : ""}</span>
@@ -15,7 +12,6 @@ function customerCard(i, from) {
         <div class="pcard-body">
             <div class="pcard-title">${esc(i.title)}</div>
             <p class="pcard-desc">${esc(i.categoryName)}</p>
-            ${remove}
         </div>
     </article>`;
 }
@@ -50,7 +46,13 @@ function setSaveButton() {
 async function openCustomerProject(id, from) {
     const r = await api("GET", `/api/customer/idps/${id}`);
     if (!r.ok) return flash(r.data.message || "Could not open that project.");
-    const i = toIdp(r.data.idp);
+    const data = itemFrom(r.data, "idp");
+    const i = toIdp(data);
+    // Until the view sends is_saved, check the shortlist instead
+    if (data.is_saved === undefined) {
+        await fetchFavourites();
+        i.saved = favourites.some(f => f.id === i.id);
+    }
     openCustomerIdp = i;
 
     PARENT.idpView = from;
@@ -78,7 +80,6 @@ async function openCustomerProject(id, from) {
 document.addEventListener("click", e => {
     const thumb = e.target.closest("[data-thumb]");
     if (thumb) return showGalleryImage(Number(thumb.dataset.thumb));
-    if (e.target.closest("[data-remove-favourite]")) return; // handled in favourite.js
     const card = e.target.closest("[data-open-customer-idp]");
     if (card) openCustomerProject(Number(card.dataset.openCustomerIdp), card.dataset.from);
 });

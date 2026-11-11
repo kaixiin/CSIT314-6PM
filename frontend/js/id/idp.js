@@ -117,15 +117,16 @@ async function openIdpDetail(id) {
         fetchIdCategories()
     ]);
     if (!view.ok) return flash(view.data.message || "Could not open that project.");
-    const i = toIdp(view.data.idp);
+    const i = toIdp(itemFrom(view.data, "idp"));
     openIdp = i;
     setIdpBackLinks(i.status);
 
     $("idpDetailTitle").textContent = i.title;
     $("idpDetailBadge").textContent = i.status;
     $("idpDetailBadge").className = "badge " + i.status.toLowerCase();
-    $("idpViews").textContent = stats.ok ? stats.data.views : "-";
-    $("idpSaves").textContent = stats.ok ? stats.data.shortlists : "-";
+    const counts = stats.ok ? stats.data.data : null;
+    $("idpViews").textContent = counts ? counts.view_count : "-";
+    $("idpSaves").textContent = counts ? counts.shortlist_count : "-";
     $(i.status === "Past" ? "idpStatusPast" : "idpStatusCurrent").checked = true;
     $("edIdpTitle").value = i.title;
     $("edIdpDesc").value = i.desc;
