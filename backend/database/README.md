@@ -59,9 +59,9 @@ python -m database.scripts.generate_idp_data
 
 | Table | Rows | Details |
 |---|---|---|
-| `idp_category` | 90 more (100 with the seed) | Style and project type combinations; every 15th is suspended |
-| `company_profile` | 100 | One each for the first 100 active designers; the other designers have no company, for testing that screen |
-| `idp` | 100 | Two each for the first 50 of those designers, about 70% `Past` and 30% `Current`, in active categories only |
+| `idp_category` | 90 more (100 with the seed) | Property types, styles, rooms, services and commercial spaces; every 15th is suspended |
+| `company_profile` | 100 | One each for the first 100 active designers, with trade-style names and addresses; the other designers have no company, for testing that screen |
+| `idp` | 100 | Two each for the first 50 of those designers, about 70% `Past` and 30% `Current`, in active categories only. Titles, descriptions and budgets match each project's category |
 | `favourite` | About 200 | 3 to 6 per active customer |
 | `idp_view` | About 1,600 | One before every favourite, plus 3 to 25 more per IDP from active customers |
 
