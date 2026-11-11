@@ -50,7 +50,12 @@ class IDP(db.Model):
             "status": self.status,
             "images": images_list,   
             "created_at": self.created_at.isoformat() if self.created_at else None,
+            "category_name": self.category_name(),
         }
+
+    def category_name(self):
+        category = db.session.get(IDPCategory, self.category_id)
+        return category.name if category else ""
 
     #CREAT IDP - #20, 25
     @classmethod
@@ -201,7 +206,10 @@ class IDP(db.Model):
     def search_idp(cls, keyword, category_id=None):
        
         try:
-            query = db.session.query(cls)
+            # IDPs in a suspended category are hidden from customers
+            query = (db.session.query(cls)
+                     .join(IDPCategory, cls.category_id == IDPCategory.category_id)
+                     .filter(IDPCategory.is_suspended.is_not(True)))
             
             if category_id is not None and category_id > 0:
                 query = query.filter_by(category_id=category_id)
@@ -238,3 +246,17 @@ class IDP(db.Model):
     def count_created(start_date, end_date):
         """IDPs created from start_date up to, but not including, end_date."""
         return IDP.query.filter(IDP.created_at >= start_date, IDP.created_at < end_date).count()
+
+    # PM VIEW IDP CATEGORY - #42: the projects assigned to a category
+    @staticmethod
+    def idps_in_category(category_id):
+        from models.user_account import UserAccount
+        rows = (db.session.query(IDP, UserAccount.username)
+                .join(UserAccount, IDP.account_id == UserAccount.account_id)
+                .filter(IDP.category_id == category_id)
+                .order_by(IDP.created_at.desc())
+                .all())
+        return [{"idp_id": idp.idp_id, "title": idp.title, "designer": username,
+                 "status": idp.status,
+                 "created_at": idp.created_at.isoformat() if idp.created_at else None}
+                for idp, username in rows]

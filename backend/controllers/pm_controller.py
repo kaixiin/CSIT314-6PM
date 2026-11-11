@@ -25,6 +25,9 @@ class ViewIDPCategoryC:
     def view_idp_category(self, category_id):
         return IDPCategory.view_idp_category(category_id)
 
+    def idps_in_category(self, category_id):
+        return IDP.idps_in_category(category_id)
+
 # -----------------------------------------
 # UPDATE IDP CATEGORY - #43
 # Controller: UpdateIDPCategoryC

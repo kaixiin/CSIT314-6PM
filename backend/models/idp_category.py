@@ -92,7 +92,9 @@ class IDPCategory(db.Model):
     def get_all_categories(cls):
     
         try:
-            categories = db.session.query(cls).order_by(cls.name).all()
+            categories = (db.session.query(cls)
+                          .filter(cls.is_suspended.is_not(True))
+                          .order_by(cls.name).all())
             return categories
         except Exception as e:
             print(f"Error fetching categories: {e}")

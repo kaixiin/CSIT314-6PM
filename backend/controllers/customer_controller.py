@@ -1,6 +1,7 @@
 from models.idp import IDP
 from models.idp_view import IDPView
 from models.favourite import Favourite
+from models.company_profile import CompanyProfile
 
 # CUSTOMER ACCESS
 # -----------------------------------------
@@ -31,6 +32,16 @@ class CustViewIDPC:
         recorded = IDPView.record_view(idp_id, account_id)
         
         return idp, recorded
+
+    def project_details(self, idp, account_id):
+        # The designer's company contact and whether this customer saved the project
+        company = CompanyProfile.view_company_profile(idp.account_id)
+        return {
+            "company_name": company.company_name if company else "",
+            "company_email": company.email if company else "",
+            "company_phone": company.contact_number if company else "",
+            "is_saved": Favourite.is_saved(account_id, idp.idp_id),
+        }
 
 # -----------------------------------------
 #CUSTOMER SHORTLIST

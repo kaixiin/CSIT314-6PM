@@ -4,6 +4,7 @@ from boundaries.cust_view_idp_boundary import CustViewIDPPg
 from boundaries.shortlist_idp_boundary import ShortlistIDPPg
 from boundaries.view_shortlisted_idp_boundary import ViewShortlistedIDPPg
 from boundaries.search_shortlisted_idp_boundary import SearchShortlistedIDPPg
+from boundaries.id_view_idp_category_boundary import ViewCategoriesPg
 
 
 # All routes here will automatically require "UserAdmin"
@@ -48,3 +49,7 @@ def view_or_search_shortlisted():
     else:
         # view all mode - call view boundary
         return ViewShortlistedIDPPg().view_favourite_list()
+
+@cust_bp.route("/categories", methods=["GET"])
+def view_categories():
+    return ViewCategoriesPg().view_categories()

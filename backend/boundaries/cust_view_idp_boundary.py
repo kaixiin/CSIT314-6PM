@@ -1,6 +1,6 @@
 # VIEW IDP AS CUSTOMER - #33
 # Boundary:CustViewIDPPg
-# Methods: view_idp(data), display_idp(idp), display_fail(message, status)
+# Methods: view_idp(data), display_idp(idp, details), display_fail(message, status)
 
 from flask import jsonify, session
 from controllers.customer_controller import CustViewIDPC
@@ -21,13 +21,13 @@ class CustViewIDPPg:
         if not recorded:
             return self.display_fail('Failed to track view. Please try again.', 500)
 
-        return self.display_idp(idp)
+        return self.display_idp(idp, CustViewIDPC().project_details(idp, account_id))
 
-    def display_idp(self, idp):
+    def display_idp(self, idp, details):
         return jsonify({
             'success': True,
             'message': 'IDP retrieved successfully',
-            'data': idp.to_dict()
+            'data': {**idp.to_dict(), **details}
         }), 200
 
     def display_fail(self, message="View IDP Failed", status=400):

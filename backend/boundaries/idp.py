@@ -6,7 +6,7 @@ import re
 from decimal import Decimal, InvalidOperation
 from config import Config
 
-IMAGE_PATTERN = re.compile(r"^data:image/(png|jpeg);base64,(.+)\$", re.DOTALL)
+IMAGE_PATTERN = re.compile(r"^data:image/(png|jpeg);base64,(.+)$", re.DOTALL)
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
 UPLOAD_FOLDER = Config.UPLOAD_FOLDER
 
