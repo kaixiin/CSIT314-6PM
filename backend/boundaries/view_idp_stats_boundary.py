@@ -2,8 +2,7 @@
 # Boundary: ViewIDPStatsPg
 # Methods: view_idp_stats(category_id), display_category(category), display_fail(message, status)
 from flask import jsonify, session
-from controllers.id_controller import ViewIDPViewCountC, ViewIDPShortlistCountC
-from models.idp import IDP
+from controllers.id_controller import IDViewIDPC, ViewIDPViewCountC, ViewIDPShortlistCountC
 
 class ViewIDPStatsPg:
     
@@ -14,13 +13,11 @@ class ViewIDPStatsPg:
         if not account_id:
             return self.display_fail("Login required", 401)
         
-        idp = IDP.view_idp(idp_id)
+        # Returns None when the project does not exist or belongs to another designer
+        idp = IDViewIDPC().id_view_idp(idp_id, account_id)
         
         if idp is None:
             return self.display_fail(f"IDP with ID {idp_id} not found", 404)
-        
-        if idp.account_id != account_id:
-            return self.display_fail("You can only view stats for your own projects", 403)
         
         view_count = ViewIDPViewCountC().count_views(idp_id)
         shortlist_count = ViewIDPShortlistCountC().count_shortlists(idp_id)
