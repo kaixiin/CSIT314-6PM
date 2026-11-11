@@ -1,4 +1,7 @@
 from models.idp_category import IDPCategory
+from models.idp import IDP
+from models.idp_view import IDPView
+from models.favourite import Favourite
 
 # IDP CATEGORY
 # -----------------------------------------
@@ -57,3 +60,32 @@ class SuspendIDPCategoryC:
 class SearchIDPCategoryC:
     def search_idp_category(self, name):
         return IDPCategory.search_idp_category(name)
+
+# -----------------------------------------
+# GENERATE REPORT (daily, weekly, monthly) - #46, #47, #48
+# Controller: GenerateReportC
+# Methods:
+#   generate_report(start_date, end_date, prev_start_date, prev_end_date, limit): dict
+#   (returns None if the report could not be built)
+
+class GenerateReportC:
+    def generate_report(self, start_date, end_date, prev_start_date, prev_end_date, limit):
+        try:
+            return {
+                "new_idps": {
+                    "current": IDP.count_created(start_date, end_date),
+                    "previous": IDP.count_created(prev_start_date, prev_end_date),
+                },
+                "views": {
+                    "current": IDPView.count_views_between(start_date, end_date),
+                    "previous": IDPView.count_views_between(prev_start_date, prev_end_date),
+                },
+                "shortlists": {
+                    "current": Favourite.count_shortlists_between(start_date, end_date),
+                    "previous": Favourite.count_shortlists_between(prev_start_date, prev_end_date),
+                },
+                "top_projects": IDPView.top_viewed_idp(start_date, end_date, limit),
+            }
+        except Exception as e:
+            print(f"generate_report failed: {e}")
+            return None

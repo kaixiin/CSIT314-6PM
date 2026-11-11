@@ -234,3 +234,7 @@ class IDP(db.Model):
             return None
 
     
+    @staticmethod
+    def count_created(start_date, end_date):
+        """IDPs created from start_date up to, but not including, end_date."""
+        return IDP.query.filter(IDP.created_at >= start_date, IDP.created_at < end_date).count()

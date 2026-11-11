@@ -11,6 +11,7 @@ from routes.company_routes import id_bp          # adds the company routes to id
 from routes.logo_routes import logo_bp
 from routes.pm_routes import pm_bp
 from routes.customer_routes import cust_bp
+import routes.report_routes
 import routes.idp_category_routes     
 
 def create_app():

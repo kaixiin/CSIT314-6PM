@@ -223,3 +223,4 @@ def validate_update_idp_fields(data):
         return None, "No fields provided for update"
 
     return validated, None
+

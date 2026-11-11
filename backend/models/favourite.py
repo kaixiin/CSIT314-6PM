@@ -104,3 +104,9 @@ class Favourite(db.Model):
         except Exception as e:
             print(f"Error counting shortlists: {e}")
             return 0
+
+    @staticmethod
+    def count_shortlists_between(start_date, end_date):
+        """Times an IDP was shortlisted from start_date up to, but not including, end_date."""
+        return Favourite.query.filter(Favourite.saved_at >= start_date,
+                                      Favourite.saved_at < end_date).count()
