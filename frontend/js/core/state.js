@@ -1,12 +1,6 @@
-// state.js
 // Shared app state and role mapping used by every role's screens.
 // Must load FIRST (after config.js): everything else in core/ and the
 // feature folders (auth/, admin/, id/) uses the globals defined here.
-//
-// No seeded demo data -- the backend database is the single source of
-// truth. These arrays start empty and get filled in by the fetch*() loaders
-// in api.js, called right after login and after any create/update/suspend/delete
-// action. Screens render from whatever was most recently fetched into them.
 
 let accounts = [];
 let profiles = [];
@@ -15,10 +9,24 @@ let profiles = [];
 let companyProfiles = {};
 // Other IDs' company profiles, for #19 Search Company Profile (competitor research).
 let otherCompanies = [];
+// IDPs: the designer's own, split by status (ID role)
+let myIdps = { Current: [], Past: [] };
+let idpCategories = [];
+// Customer role
+let browseIdpList = [];
+let customerCategories = [];
+let favourites = [];
+// Platform Manager role
+let pmCategories = [];
+// Which lists failed to load, so a failure isn't shown as "nothing found"
+let loadError = {};
 
 const PARENT = {create:"profiles", newAccount:"accounts", profileDetail:"profiles", accountDetail:"accounts",
-                ccCreate:"ccView", ccEdit:"ccView", ccNoProfile:"ccView", competitorView:"browseCompanies"};
+                ccCreate:"ccView", ccEdit:"ccView", ccNoProfile:"ccView", competitorView:"browseCompanies",
+                idpCreate:"currentIdps", idpDetail:"currentIdps", idpView:"browseIdps",
+                categoryCreate:"categories", categoryDetail:"categories"};
 let me = null, openProfileId = null, openAccountId = null;
+let openIdp = null, idpCreateStatus = "Current", openCustomerIdp = null, openCategory = null;
 
 const $ = id => document.getElementById(id);
 

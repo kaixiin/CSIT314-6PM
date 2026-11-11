@@ -31,11 +31,10 @@
     </form>
   </section>
 
-  <!-- ===================== CUSTOMER / PLATFORM MANAGER  (js/customer/, js/pm/) ===================== -->
-  <!-- Fallback face for roles without a dedicated flow yet -->
+  <!-- Fallback for an account type with no screens of its own -->
   <section class="view" id="home">
     <h1 id="welcome"></h1>
-    <p class="msg">This role's screens haven't been designed yet in this prototype.</p>
+    <p class="msg">There are no screens for this account type.</p>
   </section>
 
   <!-- ===================== USER ADMIN: Dashboard + Profiles  (js/admin/profile.js) ===================== -->
@@ -203,10 +202,6 @@
         <div style="grid-column:1/-1"><span>Address</span><span id="vAddr"></span></div>
       </div>
     </div>
-    <div class="portfolio">
-      <h2>Portfolio</h2>
-      <div class="pgrid" id="vPortfolio"></div>
-    </div>
   </section>
 
   <section class="view" id="ccEdit">
@@ -250,6 +245,289 @@
     </div>
   </section>
 
+  <!-- ===================== INTERIOR DESIGNER: Current and Past IDPs  (js/id/idp.js) ===================== -->
+
+  <section class="view" id="currentIdps">
+    <div class="head">
+      <h1>My Current IDPs</h1>
+      <button class="sm" data-create-idp="Current">+ Create New Project</button>
+    </div>
+    <p class="msg">Your ongoing design projects. Customers can see them once created.</p>
+    <div class="search"><input type="search" id="currentIdpSearch" placeholder="Search by project name..."></div>
+    <p class="found" id="currentIdpCount"></p>
+    <div class="pcards" id="currentIdpList"></div>
+  </section>
+
+  <section class="view" id="pastIdps">
+    <div class="head">
+      <h1>My Past IDPs</h1>
+      <button class="sm" data-create-idp="Past">+ Create New Project</button>
+    </div>
+    <p class="msg">Completed projects customers can browse as examples of your work.</p>
+    <div class="search"><input type="search" id="pastIdpSearch" placeholder="Search by project name..."></div>
+    <p class="found" id="pastIdpCount"></p>
+    <div class="pcards" id="pastIdpList"></div>
+  </section>
+
+  <!-- Used for both Current and Past projects -->
+  <section class="view" id="idpCreate">
+    <button class="backlink" id="idpCreateBack" data-go="currentIdps">&larr; Back to My Current IDPs</button>
+    <h1>Create New Project</h1>
+    <p class="msg" id="idpCreateMsg">Add a project you are actively working on. Its status will be Current.</p>
+    <form id="idpCreateForm">
+      <label for="idpTitle">Project Name</label>
+      <input id="idpTitle" type="text" maxlength="100" placeholder="e.g. Level Condo Renovation" required>
+      <label for="idpDesc">Description</label>
+      <textarea id="idpDesc" placeholder="Describe the project, the brief, and your approach" required></textarea>
+      <label for="idpCategory">Category</label>
+      <select id="idpCategory" required></select>
+      <label>Project photos</label>
+      <input class="logo-input" id="idpPhotos" type="file" accept="image/png,image/jpeg" multiple aria-label="Project photos">
+      <div class="photos">
+        <label class="photo add" for="idpPhotos">+ Add</label>
+        <span class="photo-tiles" id="idpPhotoTiles"></span>
+      </div>
+      <p class="hint">Up to 5 images, max 5MB each (JPG/PNG)</p>
+      <label for="idpLocation">Location</label>
+      <input id="idpLocation" type="text" placeholder="e.g. Tampines, Singapore" required>
+      <label for="idpBudget">Budget ($)</label>
+      <input id="idpBudget" type="number" min="0" step="0.01" placeholder="e.g. 25000" required>
+      <div class="row2">
+        <button class="btn ghost" type="button" id="idpCreateCancel" data-go="currentIdps">Cancel</button>
+        <button class="btn primary" type="submit">Create Project</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Used for both Current and Past projects -->
+  <section class="view" id="idpDetail">
+    <button class="backlink" id="idpDetailBack" data-go="currentIdps">&larr; Back to My Current IDPs</button>
+    <h1 style="margin-bottom:8px" id="idpDetailTitle"></h1>
+    <span class="badge" id="idpDetailBadge"></span>
+    <p class="msg" id="idpDetailMsg"></p>
+    <div class="cards">
+      <div class="card">
+        <b id="idpViews"></b>
+        Views
+      </div>
+      <div class="card">
+        <b id="idpSaves"></b>
+        Times shortlisted
+      </div>
+    </div>
+    <form id="idpDetailForm">
+      <label>Status</label>
+      <div class="seg status-seg">
+        <label>
+          <input type="radio" name="idpStatus" value="Current" id="idpStatusCurrent" checked>
+          <span>Current</span>
+        </label>
+        <label>
+          <input type="radio" name="idpStatus" value="Past" id="idpStatusPast">
+          <span>Past</span>
+        </label>
+      </div>
+      <label for="edIdpTitle">Project Name</label>
+      <input id="edIdpTitle" type="text" maxlength="100" required>
+      <label for="edIdpDesc">Description</label>
+      <textarea id="edIdpDesc" required></textarea>
+      <label for="edIdpCategory">Category</label>
+      <select id="edIdpCategory" required></select>
+      <label>Project photos</label>
+      <input class="logo-input" id="edIdpPhotos" type="file" accept="image/png,image/jpeg" multiple aria-label="Project photos">
+      <div class="photos">
+        <label class="photo add" for="edIdpPhotos">+ Add</label>
+        <span class="photo-tiles" id="edIdpPhotoTiles"></span>
+      </div>
+      <p class="hint">Up to 5 images, max 5MB each (JPG/PNG)</p>
+      <label for="edIdpLocation">Location</label>
+      <input id="edIdpLocation" type="text" required>
+      <label for="edIdpBudget">Budget ($)</label>
+      <input id="edIdpBudget" type="number" min="0" step="0.01" required>
+      <div class="row2">
+        <button class="btn primary" type="submit">Save Changes</button>
+        <button class="btn danger" type="button" id="idpDeleteBtn">Delete IDP</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===================== CUSTOMER: Browse and Shortlist  (js/customer/idp.js, js/customer/favourite.js) ===================== -->
+
+  <section class="view" id="browseIdps">
+    <h1>Browse IDPs</h1>
+    <p class="msg">Explore interior design projects and save the ones you like.</p>
+    <div class="filters">
+      <div class="search"><input type="search" id="browseSearch" placeholder="Search by project name..."></div>
+      <select id="browseCategory" aria-label="Filter by category"><option value="">All categories</option></select>
+    </div>
+    <p class="found" id="browseCount"></p>
+    <div class="pcards" id="browseList"></div>
+  </section>
+
+  <section class="view" id="idpView">
+    <button class="backlink" id="idViewBack" data-go="browseIdps">&larr; Back to Browse IDPs</button>
+    <div class="head" style="margin-bottom:6px">
+      <h1 id="idViewTitle"></h1>
+      <button class="sm" id="idViewSave">Save to Shortlist</button>
+    </div>
+    <p class="found" id="idViewMeta"></p>
+    <div class="gallery-main" id="idViewMain"></div>
+    <div class="gallery-thumbs" id="idViewThumbs"></div>
+    <div class="facts">
+      <div>
+        <span>Location</span>
+        <b id="idViewLocation"></b>
+      </div>
+      <div>
+        <span>Budget</span>
+        <b id="idViewBudget"></b>
+      </div>
+      <div>
+        <span>Status</span>
+        <b id="idViewStatus"></b>
+      </div>
+    </div>
+    <h2 class="sub-title">About this project</h2>
+    <p class="vdesc" id="idViewDesc"></p>
+    <div class="vcard contact" id="idViewContact">
+      <b>Contact the designer</b>
+      <span id="idViewCompany"></span>
+      <span id="idViewContactLine"></span>
+    </div>
+  </section>
+
+  <section class="view" id="shortlist">
+    <h1>My Shortlist</h1>
+    <p class="msg">Projects you have saved. Search stays within your shortlist.</p>
+    <div class="search"><input type="search" id="shortlistSearch" placeholder="Search my shortlist..."></div>
+    <p class="found" id="shortlistCount"></p>
+    <div class="pcards" id="shortlistList"></div>
+  </section>
+
+  <!-- ===================== PLATFORM MANAGER: Categories  (js/pm/category.js) ===================== -->
+
+  <section class="view" id="categories">
+    <div class="head">
+      <h1>IDP Categories</h1>
+      <button class="sm" data-go="categoryCreate">+ Create New Category</button>
+    </div>
+    <p class="msg">Organise IDPs into categories so customers can browse by type.</p>
+    <div class="search"><input type="search" id="categorySearch" placeholder="Search by category name..."></div>
+    <p class="found" id="categoryCount"></p>
+    <div class="table-wrap">
+      <table class="dtable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="categoryRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="view" id="categoryCreate">
+    <button class="backlink" data-go="categories">&larr; Back to IDP Categories</button>
+    <h1>Create New Category</h1>
+    <p class="msg" id="categoryCreateMsg">Add a new IDP category for customers to browse.</p>
+    <form id="categoryCreateForm">
+      <label for="catName">Category Name</label>
+      <input id="catName" class="with-hint" type="text" maxlength="50" placeholder="e.g. Residential" required>
+      <p class="hint">Must be unique. "Residential" and "residential" count as the same name.</p>
+      <label for="catDesc">Description</label>
+      <textarea id="catDesc" maxlength="255" placeholder="Briefly describe what kinds of IDPs belong in this category" required></textarea>
+      <div class="row2">
+        <button class="btn ghost" type="button" data-go="categories">Cancel</button>
+        <button class="btn primary" type="submit">Create Category</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="view" id="categoryDetail">
+    <button class="backlink" data-go="categories">&larr; Back to IDP Categories</button>
+    <div class="head" style="margin-bottom:8px">
+      <h1 id="catDetailName"></h1>
+      <button class="sm red-outline" id="catSuspendBtn">Suspend Category</button>
+      <button class="sm dark" id="catReactivateBtn" hidden>Reactivate</button>
+    </div>
+    <span class="badge" id="catDetailBadge"></span>
+    <p class="msg" id="catDetailMsg"></p>
+    <form id="categoryDetailForm">
+      <label for="edCatName">Category Name</label>
+      <input id="edCatName" type="text" maxlength="50" required>
+      <label for="edCatDesc">Description</label>
+      <textarea id="edCatDesc" maxlength="255" required></textarea>
+      <button class="btn primary" type="submit">Save Changes</button>
+    </form>
+    <h2 class="sub-title spaced" id="catAssignedTitle"></h2>
+    <div class="table-wrap">
+      <table class="dtable">
+        <thead>
+          <tr>
+            <th>Project Name</th>
+            <th>Designer</th>
+            <th>Status</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody id="catAssignedRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== PLATFORM MANAGER: Reports  (js/pm/report.js) ===================== -->
+
+  <section class="view" id="reports">
+    <h1>Reports</h1>
+    <p class="msg">Choose a period and click Generate to see platform activity.</p>
+    <div class="period">
+      <button class="sm act" data-period="daily">Daily</button>
+      <button class="sm" data-period="weekly">Weekly</button>
+      <button class="sm" data-period="monthly">Monthly</button>
+      <button class="sm generate" id="generateReport">Generate</button>
+    </div>
+    <div class="empty report-empty" id="reportEmpty">No report yet. Choose a period and click Generate.</div>
+    <div id="reportResult" hidden>
+      <h2 class="report-title" id="reportTitle"></h2>
+      <p class="report-covers" id="reportCovers"></p>
+      <p class="hint" id="reportGenerated"></p>
+      <div class="cards report-cards">
+        <div class="card">
+          <b id="repNew"></b>
+          New IDPs
+          <span class="change up" id="repNewChange"></span>
+        </div>
+        <div class="card">
+          <b id="repViews"></b>
+          Views
+          <span class="change up" id="repViewsChange"></span>
+        </div>
+        <div class="card">
+          <b id="repSaves"></b>
+          Times shortlisted
+          <span class="change down" id="repSavesChange"></span>
+        </div>
+      </div>
+      <h2 class="report-title">Top 5 projects</h2>
+      <p class="hint">Ranked by views in this period</p>
+      <div class="table-wrap">
+        <table class="dtable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Project</th>
+              <th>Category</th>
+              <th>Views</th>
+            </tr>
+          </thead>
+          <tbody id="reportTop"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== SHARED ===================== -->
   <!-- Confirmation modal (Suspend / Reactivate / Delete).
        Filled in and shown by confirmDialog() in js/core/ui.js -- do not
@@ -281,6 +559,13 @@
 <script src="js/admin/account.js"></script>
 
 <script src="js/id/company.js"></script>
+<script src="js/id/idp.js"></script>
+
+<script src="js/customer/idp.js"></script>
+<script src="js/customer/favourite.js"></script>
+
+<script src="js/pm/category.js"></script>
+<script src="js/pm/report.js"></script>
 
 <script>
   restoreSession();

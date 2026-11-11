@@ -1,6 +1,4 @@
-// profile.js
 // Admin: create / view / update / search / suspend User Profiles.
-// Connected to the real backend.
 
 async function triggerCreateProfile(event) {
     event.preventDefault();
@@ -8,7 +6,6 @@ async function triggerCreateProfile(event) {
 
     const name = document.getElementById('uname').value.trim();
     const desc = document.getElementById('desc').value.trim();
-//    const checkedPermissions = [...document.querySelectorAll('#createForm .perms input[type="checkbox"]:checked')].map(c => c.value);
 
     msg("createMsg", "Creating profile...", false);
 
@@ -33,8 +30,6 @@ async function triggerCreateProfile(event) {
             return;
         }
 
-        // Backend is the source of truth -- re-fetch instead of guessing
-        // what the new row looks like.
         await fetchProfiles();
 
         document.getElementById("createForm").reset();

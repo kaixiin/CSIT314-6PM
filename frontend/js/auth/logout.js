@@ -1,5 +1,4 @@
-// logout.js
-// Logout. Connected to the real backend per auth_routes.py.
+// Logout.
 
 async function triggerLogout() {
     try {

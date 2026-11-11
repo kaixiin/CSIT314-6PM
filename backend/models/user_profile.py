@@ -1,6 +1,5 @@
 # Entity: UserProfile
-# Used by: Create user profile (User Admin)
-# Methods:
+# Used by: User Admin
 
 from extensions import db
 from sqlalchemy.exc import IntegrityError

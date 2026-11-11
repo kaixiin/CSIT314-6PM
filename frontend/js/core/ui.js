@@ -1,4 +1,3 @@
-// ui.js
 // Screen helpers, list/detail rendering, the confirmation dialog, the central
 // view router show(), and navigation click handling.
 // Loads after state.js and api.js.
@@ -7,14 +6,34 @@ const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",
 const msg = (id, text, err) => { $(id).textContent = text; $(id).className = "msg" + (err ? " err" : ""); };
 const flash = t => { $("ok").textContent = t; $("ok").className = "on"; setTimeout(() => $("ok").className = "", 2500); };
 const badge = s => `<span class="badge ${s === "Suspended" ? "suspended" : "active"}">${s}</span>`;
+const fmtMoney = n => "$" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// Searches on the backend shortly after typing stops. The result is only shown
+// if the box still holds what was searched for, so a slow reply can't overwrite a newer one.
+function wireSearch(inputId, load, render) {
+  let timer;
+  $(inputId).addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+      const query = $(inputId).value;
+      await load(query);
+      if ($(inputId).value === query) render();
+    }, 250);
+  });
+}
 
 const adminViews = ["dash","profiles","profileDetail","create","accounts","accountDetail","newAccount"];
-const idViews = ["ccNoProfile","ccCreate","ccView","ccEdit","browseCompanies","competitorView"];
+const idViews = ["ccNoProfile","ccCreate","ccView","ccEdit","browseCompanies","competitorView","currentIdps","pastIdps","idpCreate","idpDetail"];
+const customerViews = ["browseIdps","idpView","shortlist"];
+const pmViews = ["categories","categoryCreate","categoryDetail","reports"];
 const defaultIdView = () => companyProfiles[me.id] ? "ccView" : "ccNoProfile";
 
 const NAV = {
   admin: [["dash","Dashboard"],["profiles","Profiles"],["accounts","Accounts"]],
-  id: [["ccView","My Company"],["browseCompanies","Browse Companies"]]
+  id: [["currentIdps","Current IDPs"],["pastIdps","Past IDPs"],["ccView","My Company"],["browseCompanies","Browse Companies"]],
+  customer: [["shortlist","My Shortlist"],["browseIdps","Browse IDPs"]],
+  pm: [["categories","Categories"],["reports","Reports"]]
 };
 
 function profileRow(p) {
@@ -82,10 +101,6 @@ function openAccount(id) {
 }
 
 // ---- Company profile (ID) read/display helpers ----
-// NOTE: these only *render* company-profile data onto the screen. The actual
-// create / update / delete form handlers for the ID role (companyCreateForm,
-// companyEditForm, #ccDeleteBtn, #companySearch) are NOT wired here -- that's
-// the Sprint 3 JS to be added separately (js/id/company.js).
 const showLogo = (imgId, url) => {
   if (url) $(imgId).src = url; else $(imgId).removeAttribute("src");
   $(imgId).hidden = !url;
@@ -99,9 +114,6 @@ function renderCompanyView() {
   $("vEmail").textContent = p.email;
   $("vPhone").textContent = p.phone || "Not provided";
   $("vAddr").textContent = p.addr || "Not provided";
-  $("vPortfolio").innerHTML = p.portfolio && p.portfolio.length
-    ? p.portfolio.map(() => `<div class="pitem"></div>`).join("")
-    : `<div class="pempty" style="grid-column:1/-1">No portfolio projects added yet.</div>`;
 }
 function renderCompanyList(filter) {
   const q = (filter || "").trim().toLowerCase();
@@ -138,13 +150,7 @@ function fillCompanyEditForm() {
   msg("ccEditMsg", "Keep your company profile up to date so customers see accurate information.");
 }
 
-// Shared confirmation modal -- replaces the browser's native confirm()
-// popup with the styled dialog from the wireframe (title + body text +
-// Cancel / red confirm button). Used for Suspend/Reactivate (profile,
-// account) and Delete (company profile), per UCD items #128 and #11,
-// which both call for "a warning with a confirmation dialogue box."
-//
-// Usage: const ok = await confirmDialog("Delete Company Profile?", "Are you sure...", "Delete Profile");
+// Styled confirm popup used before suspending or deleting.
 function confirmDialog(title, body, confirmLabel) {
   return new Promise(resolve => {
     $("modalTitle").textContent = title;
@@ -167,9 +173,7 @@ function confirmDialog(title, body, confirmLabel) {
 }
 
 // ---- Central view router ----
-// Every screen switch (login, nav clicks, post-submit redirects) goes
-// through show(id). It also enforces role guards, so a user can never land
-// on a screen another role owns just by changing state.
+// Every screen change goes through show(), which also stops a role opening another role's screens.
 function show(id) {
   const r = roleOf();
   if (!r) id = "login";
@@ -178,12 +182,14 @@ function show(id) {
     if (id === "login" || !idViews.includes(id)) id = defaultIdView();
     else if (id === "ccView" && !companyProfiles[me.id]) id = "ccNoProfile";
   }
-  else { id = "home"; } // customer: no dedicated screens yet in this prototype
+  else if (r === "customer") { if (!customerViews.includes(id)) id = "browseIdps"; }
+  else if (r === "pm") { if (!pmViews.includes(id)) id = "categories"; }
+  else { id = "home"; } // an account type with no screens of its own
 
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
   document.body.className = r || "";
   $("status").textContent = me
-    ? "Logged in as " + (r === "admin" ? "System Admin" : r === "id" ? "ID" : r === "customer" ? "Customer" : "User") + (me.name ? " — " + me.name : "")
+    ? "Logged in as " + (r === "admin" ? "System Admin" : r === "id" ? "ID" : r === "customer" ? "Customer" : r === "pm" ? "PM" : "User") + (me.name ? " - " + me.name : "")
     : "Logged out";
   $("logout").hidden = !me;
 
@@ -202,15 +208,19 @@ function show(id) {
     if (id === "ccView") renderCompanyView();
     if (id === "ccEdit") fillCompanyEditForm();
     if (id === "browseCompanies") renderCompanyList($("companySearch").value);
+    if (id === "currentIdps" || id === "pastIdps") renderMyIdps(id);
+  } else if (r === "customer") {
+    if (id === "browseIdps") renderBrowseIdps();
+    if (id === "shortlist") renderShortlist();
+  } else if (r === "pm") {
+    if (id === "categories") renderCategories();
   } else {
     $("welcome").textContent = "Welcome, " + me.name;
   }
 }
 
 // ---- Navigation click delegation (data-go links, list rows) ----
-// Generic routing only -- no feature-specific business logic lives here.
-// Async so each nav click can pull fresh data from the backend before the
-// screen it's going to is rendered.
+// Handles data-go links and list rows, loading fresh data first.
 document.addEventListener("click", async e => {
   const row1 = e.target.closest("[data-open-profile]");
   if (row1) return openProfile(Number(row1.dataset.openProfile));
@@ -228,6 +238,15 @@ document.addEventListener("click", async e => {
   if (go === "accounts") { await fetchProfiles(); await fetchAccounts(); }
   if (go === "browseCompanies") await fetchCompanies();
   if (go === "ccView" && me) await fetchCompanyProfile(me.id);
+  if (go === "currentIdps") await fetchMyIdps("Current", $("currentIdpSearch").value);
+  if (go === "pastIdps") await fetchMyIdps("Past", $("pastIdpSearch").value);
+  if (go === "browseIdps") await fetchBrowseIdps($("browseSearch").value, $("browseCategory").value);
+  if (go === "shortlist") await fetchFavourites($("shortlistSearch").value);
+  if (go === "categories") await fetchPmCategories($("categorySearch").value);
+  if (go === "categoryCreate") {
+    $("categoryCreateForm").reset();
+    msg("categoryCreateMsg", "Add a new IDP category for customers to browse.");
+  }
   show(go);
 });
 
