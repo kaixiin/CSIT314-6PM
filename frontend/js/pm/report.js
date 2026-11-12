@@ -82,7 +82,10 @@ async function triggerGenerateReport() {
     if (!r.ok) {
         $("reportResult").hidden = true;
         $("reportEmpty").hidden = false;
-        $("reportEmpty").textContent = r.data.message || "Could not generate the report.";
+        // Always say the report failed, then the reason if there is one (e.g. "Cannot connect to the server.").
+        // The backend's own failure message already says this, so it is not repeated.
+        const reason = r.data.message && !r.data.message.startsWith("Could not generate") ? " " + r.data.message : "";
+        $("reportEmpty").textContent = "Could not generate the report." + reason;
         return;
     }
     renderReport(period, r.data.report);

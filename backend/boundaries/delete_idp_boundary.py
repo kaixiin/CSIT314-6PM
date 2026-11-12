@@ -11,7 +11,6 @@ class DeleteIDPPg:
     def delete_idp(self, idp_id):
     
         account_id = session.get("account_id")
-        print(f"Logged-in account_id: {account_id}")
         
         if not account_id:
             return self.display_fail("Login required", 401)

@@ -114,9 +114,9 @@ class UpdateIDPC:
 # Calls: IDP.delete_idp() in models/idp.py
  
 class DeleteIDPC:
-    def delete_idp(self, account_id, idp_id):
+    def delete_idp(self, idp_id, account_id):
         
-        is_deleted = IDP.delete_idp(account_id, idp_id)
+        is_deleted = IDP.delete_idp(idp_id, account_id)
 
         return is_deleted
 
