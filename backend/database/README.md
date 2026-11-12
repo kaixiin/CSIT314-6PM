@@ -6,6 +6,7 @@
 | `seed.sql` | Fixed test data used in our test cases (the logins below) |
 | `scripts/generate_user_data.py` | Bulk test data: 180 extra user accounts |
 | `scripts/generate_idp_data.py` | Bulk test data: 100 companies, 100 IDPs, categories, favourites and views |
+| `view_data.sql` | Queries that show every table's rows and the row counts, for checking the data |
 
 ## 1. Create the database
 
